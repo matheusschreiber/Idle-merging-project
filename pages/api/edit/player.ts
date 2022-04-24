@@ -3,15 +3,15 @@ import connection from '../../../database/connection'
 import crypto from 'crypto'
 
 import { Player } from '../../../types/Player.types'
+import { Error } from "../../../types/Error.types";
 
-export default async function handler(req:NextApiRequest, res:NextApiResponse<Player>){
+export default async function handler(req:NextApiRequest, res:NextApiResponse<Player | Error>){
   const { id, name, password, rank, aircrafts, wallet  } = req.body
   
   const [found] = await connection('players').where('id',id)
   
   if (!found) {
-    res.status(404)
-    throw Error('Player not found')
+    res.status(404).json({error:'Player not found'})
   }
   
   const hash = crypto.createHash('sha256')

@@ -3,8 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import connection from '../../../database/connection'
 
 import { Aircraft } from '../../../types/Aircraft.types'
+import { Error } from "../../../types/Error.types";
 
-export default async function handler(req: NextApiRequest,res: NextApiResponse<Aircraft>) {
+export default async function handler(req: NextApiRequest,res: NextApiResponse<Aircraft | Error>) {
   const { player_id, level, money_per_second, bonus_multiplier } = req.body;
   const aircraftTemplate = {
     player_id,
@@ -16,14 +17,21 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<A
   let [ player ] = await connection('players').where('id',player_id)
   
   if (!player) {
-    res.status(404)
-    throw Error('Player with id ' + player_id + ' not found')
+    res.status(404).json({error:'Player with id ' + player_id + ' not found'})
+  }
+
+  let player_aircrafts:Number[] = []
+  if (player.aircrafts) player.aircrafts.split(',').map((i:string)=>player_aircrafts.push(parseInt(i)))
+
+  if (player_aircrafts.length === 6) {
+    res.status(403).json({error:'Player has reached maximum amount of aircrafts'})
   }
 
   const [ id ] = await connection('aircrafts').insert(aircraftTemplate)
-
-  //inserir mecanismo para adicionar a aircraft na lista do player
-
+  
+  player_aircrafts.push(id)
+  await connection('players').where('id',player_id).update({aircrafts:String(player_aircrafts)})
+  
   const aircraft:Aircraft = { 
     id,
     player_id:aircraftTemplate.player_id,

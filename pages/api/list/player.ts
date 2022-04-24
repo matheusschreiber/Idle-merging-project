@@ -7,6 +7,5 @@ type PlayerList = Player[]
 
 export default async function handler(req:NextApiRequest, res:NextApiResponse<PlayerList>){
   const players = await connection('players').select('*')
-  
   res.status(200).json(players)
 }

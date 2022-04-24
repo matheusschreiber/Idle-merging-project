@@ -6,7 +6,8 @@ import {
   handleNewAircraft,
   handleDeleteAircraft,
   handleEditAircraft,
-  handleListAircraft
+  handleListAircraft,
+  handleGetAircraft
 } from '../services/crud_aircrafts'
 
 import {
@@ -27,18 +28,6 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <button onClick={handleNewAircraft}>create aircraft</button>
-        <button onClick={handleEditAircraft}>edit aircraft</button>
-        <button onClick={handleDeleteAircraft}>delete aircraft</button>
-        <button onClick={handleListAircraft}>list aircraft</button>
-        
-        <br/>
-
-        <button onClick={handleNewPlayer}>create player</button>
-        <button onClick={handleEditPlayer}>edit player</button>
-        <button onClick={handleDeletePlayer}>delete player</button>
-        <button onClick={handleListPlayer}>list player</button>
-        <button onClick={handleGetPlayer}>get player</button>
         
       </main>
 
