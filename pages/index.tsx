@@ -1,12 +1,21 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+
 import {
   handleNewAircraft,
   handleDeleteAircraft,
   handleEditAircraft,
   handleListAircraft
 } from '../services/crud_aircrafts'
+
+import {
+  handleNewPlayer,
+  handleEditPlayer,
+  handleDeletePlayer,
+  handleListPlayer,
+  handleGetPlayer
+} from '../services/crud_players'
 
 const Home: NextPage = () => {
   return (
@@ -22,11 +31,14 @@ const Home: NextPage = () => {
         <button onClick={handleEditAircraft}>edit aircraft</button>
         <button onClick={handleDeleteAircraft}>delete aircraft</button>
         <button onClick={handleListAircraft}>list aircraft</button>
+        
         <br/>
-        <button onClick={handleNewAircraft}>create player</button>
-        <button onClick={handleNewAircraft}>edit player</button>
-        <button onClick={handleNewAircraft}>delete player</button>
-        <button onClick={handleNewAircraft}>list player</button>
+
+        <button onClick={handleNewPlayer}>create player</button>
+        <button onClick={handleEditPlayer}>edit player</button>
+        <button onClick={handleDeletePlayer}>delete player</button>
+        <button onClick={handleListPlayer}>list player</button>
+        <button onClick={handleGetPlayer}>get player</button>
         
       </main>
 
