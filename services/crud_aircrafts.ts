@@ -5,9 +5,9 @@ import Swal from 'sweetalert2'
 export async function handleNewAircraft(){
   const aircraft = {
     level:1,
+    player_id: 11,
     money_per_second:10,
     bonus_multiplier:1,
-    owner:"Matheus"
   }
   try {
     await api.post('new/aircraft', aircraft)
@@ -42,7 +42,7 @@ export async function handleDeleteAircraft(){
 export async function handleListAircraft(){
   try {
     const response = await api.get('list/aircraft')
-    console.log(response.data.aircrafts)
+    console.log(response.data)
   } catch {
     Swal.fire('Something went wrong', 'Error at aircraft creation, please report this bug on the github comments', 'error')
   }
