@@ -1,14 +1,9 @@
 import api from './api'
 import Swal from 'sweetalert2'
 
+import { Aircraft } from '../types/Aircraft.types'
 
-export async function handleNewAircraft(){
-  const aircraft = {
-    level:1,
-    player_id: 11,
-    money_per_second:10,
-    bonus_multiplier:1,
-  }
+export async function handleNewAircraft(aircraft:Aircraft){
   try {
     await api.post('new/aircraft', aircraft)
   } catch {
@@ -16,34 +11,36 @@ export async function handleNewAircraft(){
   }
 }
 
-export async function handleEditAircraft(){
-  const aircraft = {
-    id:10,
-    level:2,
-    money_per_second:15,
-    bonus_multiplier:5,
-    owner:"Matheus"
-  }
+export async function handleEditAircraft(aircraft:Aircraft){
   try {
     await api.post('edit/aircraft', aircraft)
   } catch {
-    Swal.fire('Something went wrong', 'Error at aircraft creation, please report this bug on the github comments', 'error')
+    Swal.fire('Something went wrong', 'Error at aircraft edit, please report this bug on the github comments', 'error')
   }
 }
 
-export async function handleDeleteAircraft(){
+export async function handleDeleteAircraft(id:Number){
   try {
-    await api.put('delete/aircraft', {id:11})
+    await api.put('delete/aircraft', {id:id})
   } catch {
-    Swal.fire('Something went wrong', 'Error at aircraft creation, please report this bug on the github comments', 'error')
+    Swal.fire('Something went wrong', 'Error at aircraft deletion, please report this bug on the github comments', 'error')
   }
 }
 
 export async function handleListAircraft(){
   try {
     const response = await api.get('list/aircraft')
-    console.log(response.data)
+    return response.data
   } catch {
-    Swal.fire('Something went wrong', 'Error at aircraft creation, please report this bug on the github comments', 'error')
+    Swal.fire('Something went wrong', 'Error at aircraft list, please report this bug on the github comments', 'error')
+  }
+}
+
+export async function handleGetAircraft(id:Number){
+  try {
+    const response = await api.put('get/aircraft', {id:id})
+    return response.data
+  } catch {
+    Swal.fire('Something went wrong', 'Error at aircraft search, please report this bug on the github comments', 'error')
   }
 }
