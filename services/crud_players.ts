@@ -27,7 +27,8 @@ export async function handleDeletePlayer(id:Number){
   }
 }
 
-export async function handleListPlayer(){
+type handleListPlayer = () => Promise<Player[]>
+export const handleListPlayer:handleListPlayer = async () => {
   try {
     const response = await api.get('list/player')
     return response.data
@@ -36,7 +37,8 @@ export async function handleListPlayer(){
   }
 }
 
-export async function handleGetPlayer(id:Number){
+type handleGetPlayer = (id:Number) => Promise<Player>
+export const handleGetPlayer:handleGetPlayer = async (id) => {
   try {
     const response = await api.put('get/player', {id:id})
     return response.data

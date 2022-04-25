@@ -1,7 +1,7 @@
 export type Aircraft = {
-  id: Number,
-  player_id: Number,
-  level: Number, 
-  money_per_second: Number,
-  bonus_multiplier: Number,
+  id: number,
+  player_id: number,
+  level: number, 
+  money_per_second: number,
+  bonus_multiplier: number,
 }

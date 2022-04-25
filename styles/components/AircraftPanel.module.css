@@ -1,0 +1,108 @@
+.container {
+  background-color: var(--gray);
+  width: 400px;
+  border-radius: 10px;
+  padding: 10px;
+  margin-left: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+}
+
+.container .title{
+  background-color: var(--redish);
+  border-radius: 100px;
+  padding-left: 20px;
+  margin-top: -30px;
+  width: 440px;
+  font-size: 10pt;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.content .aircraft_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  width: 100px;
+  height: 100px;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.aircraft_item img {
+  margin-top: 5px;
+  width: 70%;
+}
+
+.aircraft_item p {
+  font-size: 15pt;
+  font-weight: bold;
+  color: var(--dark_gray);
+  margin-top: -40px;
+}
+
+.aircraft_item h2 {
+  color: var(--dark_white);
+  background-color: var(--dark_gray);
+  border-radius: 100px;
+  margin-top: 20px;
+  font-size: 10pt;
+  padding: 1px 15px;
+}
+
+.aircraft_item h3 {
+  color: var(--dark_gray);
+  font-size: 10pt;
+  position: relative;
+  top: 5px;
+}
+
+.aircraft_item#off h2 {
+  background-color: var(--dark_white);
+  height: 20px;
+  width: 80%;
+}
+
+#on {
+  background-color: var(--redish);
+  cursor: pointer;
+}
+
+#off {
+  background-color: var(--grayish_white);
+  font-size: 30pt;
+  color: var(--dark_gray);
+}
+
+.loading_bar_container {
+  margin-top: 100px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading_bar_container h2 {
+  color: var(--dark_gray);
+  font-size: 15pt;
+}
+
+.loading_bar {
+  width: 340px;
+  height: 50px;
+  background-color: var(--light_white);
+}
+
+.loading_bar .filled {
+  height: 100%;
+  width: 70%;
+  background-color: var(--redish);
+}

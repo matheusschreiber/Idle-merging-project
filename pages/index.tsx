@@ -1,6 +1,13 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { useEffect, useState } from 'react'
+import Swal from 'sweetalert2'
+
+import { Aircraft } from '../types/Aircraft.types'
+import { Player } from '../types/Player.types'
+
+import { Header } from '../components/Header'
 
 import {
   handleNewAircraft,
@@ -18,7 +25,23 @@ import {
   handleGetPlayer
 } from '../services/crud_players'
 
+import { AircraftPanel } from '../components/AircraftPanel'
+import { Ring } from '../components/Ring'
+
 const Home: NextPage = () => {
+
+  const [ player, setPlayer ] = useState<Player>()
+  
+  async function loadPlayerData(){
+    const player:Player = await handleGetPlayer(1)
+    setPlayer(player)  
+    console.log(player) 
+  }     
+
+  useEffect(()=>{
+    loadPlayerData()
+  }, [])  
+   
   return (
     <div className={styles.container}>
       <Head>
@@ -28,12 +51,21 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        
+        {
+          player?
+          <Header {...player}/>
+          :"Loading..."
+        }
+
+
+        {/* <AircraftPanel /> */}
+
+        <Ring />
+
+
       </main>
 
-      <footer className={styles.footer}>
-        footer
-      </footer>
+      
     </div>
   )
 }

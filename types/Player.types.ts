@@ -1,8 +1,8 @@
 export type Player = {
-  id: Number,
-  name: String,
-  password: String,
-  rank: Number,
-  aircrafts: String,
-  wallet: Number
+  id: number,
+  name: string,
+  password: string,
+  rank: number,
+  aircrafts: string,
+  wallet: number
 }
