@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; 
+  position: absolute;
 }
 
 .container .title{
@@ -23,6 +24,7 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
   padding-top: 20px;
+  list-style: none;
 }
 
 .content .aircraft_item {
@@ -74,6 +76,11 @@
 #on {
   background-color: var(--redish);
   cursor: pointer;
+  transition: .2s;
+}
+
+#on:hover {
+  transform: rotate(-10deg) scale(1.1);
 }
 
 #off {

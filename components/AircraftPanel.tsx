@@ -1,55 +1,66 @@
 import { NextPage } from "next"
-import { useState } from 'react'
-
-import styles from '../styles/components/AircraftPanel.module.css'
-import { FiPlusCircle } from 'react-icons/fi'
+import { useState, useEffect } from 'react'
 
 import { Aircraft } from "../types/Aircraft.types"
 
-export const AircraftPanel:NextPage = () => {
-  const [ aircrafts, setAicrafts ] = useState<Aircraft[]>([])
+import styles from '../styles/components/AircraftPanel.module.css'
 
+import { AircraftItemWrapper } from "./AircraftItemWrapper"
+import { handleGetAircraft } from '../services/crud_aircrafts'
+import { handleGetPlayer } from '../services/crud_players'
+
+type playerID = {
+  playerID:number
+}
+
+type Empty = {
+  id:number
+}
+
+export const AircraftPanel:NextPage<playerID> = ({playerID}) => {
+  const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([])
+  const [ update, setUpdate ] = useState()
+
+  async function loadAircrafts(){
+    // TODO: Passar essa tratativa para o index.tsx, já que vai ser usada para o ring
+
+    const player = await handleGetPlayer(playerID)
+    
+    let aux = aircrafts.slice()
+    await Promise.all(
+      player.aircrafts.split(',').map(async (aircraftID)=>{
+        const aircraft = await handleGetAircraft(parseInt(aircraftID))
+        aux.push(aircraft)
+    }))
+
+    const length = aux.length
+    if(length<6) for(let i=1;i<=6-length;i++) {
+      let fakeAircraft:Aircraft = {...aux[0]}
+      fakeAircraft.id=-i
+      aux.push(fakeAircraft)
+    }
+    console.log(aux)
+    setAircrafts(aux)
+  }
+
+  useEffect(()=>{
+    loadAircrafts()
+  },[update])
+  
   return(
     <div className={styles.container}>
+      
       <div className={styles.title}>
         <h1>FLYING</h1>
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.aircraft_item} id={styles.on}>
-          <img src="aircraft_mini.png" />
-          <p>1</p>
-          <h2>level 1</h2>
-          <h3>$12 p/ sec</h3>
-        </div> 
-
-        <div className={styles.aircraft_item} id={styles.on}>
-          <img src="aircraft_mini.png" />
-          <p>2</p>
-          <h2>level 2</h2>
-          <h3>$15 p/ sec</h3>
-        </div>
-
-        <div className={styles.aircraft_item} id={styles.off}>
-          <FiPlusCircle />
-          <h2></h2>
-        </div>
-
-        <div className={styles.aircraft_item} id={styles.off}>
-          <FiPlusCircle />
-          <h2></h2>
-        </div>
-
-        <div className={styles.aircraft_item} id={styles.off}>
-          <FiPlusCircle />
-          <h2></h2>
-        </div>
-
-        <div className={styles.aircraft_item} id={styles.off}>
-          <FiPlusCircle />
-          <h2></h2>
-        </div>
-      </div>
+      <ul className={styles.content}>
+        {
+          aircrafts.map((a)=>(
+            <AircraftItemWrapper key={a.id} {...a}/>
+          ))
+        }
+      </ul>
 
       <div className={styles.loading_bar_container}>
         <h2>10 seconds until next aircraft</h2>
