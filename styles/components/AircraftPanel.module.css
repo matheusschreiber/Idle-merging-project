@@ -37,6 +37,7 @@
   height: 100px;
   padding-top: 20px;
   margin-top: 10px;
+  user-select: none;
 }
 
 .aircraft_item img {
@@ -74,42 +75,36 @@
 }
 
 #on {
-  background-color: var(--redish);
+  background-color: var(--light_gray);
   cursor: pointer;
   transition: .2s;
 }
 
 #on:hover {
-  transform: rotate(-10deg) scale(1.1);
+  background-color: var(--redish);
+  animation: wiggle .5s infinite;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(-2deg) scale(1.05); 
+  }
+  50% {
+    transform: rotate(2deg) scale(1.05); 
+  }
+  100% {
+    transform: rotate(-2deg) scale(1.05); 
+  }
 }
 
 #off {
   background-color: var(--grayish_white);
   font-size: 30pt;
-  color: var(--dark_gray);
+  color: var(--gray);
+  transition: .2s;
 }
 
-.loading_bar_container {
-  margin-top: 100px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+#off:hover {
+  transform: scale(1.05);
+} 
 
-.loading_bar_container h2 {
-  color: var(--dark_gray);
-  font-size: 15pt;
-}
-
-.loading_bar {
-  width: 340px;
-  height: 50px;
-  background-color: var(--light_white);
-}
-
-.loading_bar .filled {
-  height: 100%;
-  width: 70%;
-  background-color: var(--redish);
-}

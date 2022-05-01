@@ -19,11 +19,12 @@ a {
 }
 
 :root {
-  --dark_gray:#434358;
-  --gray:#8D8DAA;
   --light_gray:#A3A3BB;
-  --dark_white:#DFDFDE;
-  --light_white:#F7F5F2;
+  --gray:#8D8DAA;
+  --dark_gray:#434358;
+
   --grayish_white:#EBEBE8;
+  --light_white:#F7F5F2;
+  --dark_white:#DFDFDE;
   --redish:#F56D91;
 }
