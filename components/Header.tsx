@@ -15,7 +15,7 @@ import {
   handleEditAircraft,
   handleListAircraft,
   handleGetAircraft
-} from '../services/crud_aircrafts'
+} from '../services/aircraft'
 
 import {
   handleNewPlayer,
@@ -23,7 +23,7 @@ import {
   handleDeletePlayer,
   handleListPlayer,
   handleGetPlayer
-} from '../services/crud_players'
+} from '../services/player'
 
 export const Header: NextPage<Player> = (playerImported:Player) => {
   const [ flow, setFlow ] = useState<number>(0)

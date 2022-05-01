@@ -1,48 +1,33 @@
 import { NextPage } from "next";
-import { useDrag, DragSourceMonitor } from "react-dnd";
+import { FiPlus } from 'react-icons/fi'
 
 import styles from '../styles/components/AircraftPanel.module.css'
 import { Aircraft } from "../types/Aircraft.types";
 
-interface DropResult {
-  dropEffect: string
-  aircraftID: number
-  aircraftlvl: number
+type ListItem = {
+  aircraft:Aircraft,
+  ListID: number
 }
 
-export const AircraftItem:NextPage<Aircraft> = (aircraftObject:Aircraft) => {
-  const [{ opacity }, drag ] = useDrag(() => ({
-    type:'Aircraft',
-    item: {aircraftObject},
-    end(item, monitor) {
-      const dropResult = monitor.getDropResult() as DropResult
-
-      const differentAircrafts = item.aircraftObject.id!==dropResult.aircraftID
-      const samelvlaircrafts = item.aircraftObject.level===dropResult.aircraftlvl
-      const allowed = differentAircrafts && samelvlaircrafts
-
-      if (allowed && dropResult.aircraftID>0) {
-        console.log(`You merged ${item.aircraftObject.id} into ${dropResult.aircraftID}!`)
-      }
-    },
-    collect: (monitor: DragSourceMonitor) => ({
-      opacity: monitor.isDragging() ? 0 : 1,
-    }),
-  }),[aircraftObject]
-  )
-  
+export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
   
   return(
-    <div 
-      ref={drag} 
-      className={styles.aircraft_item} 
-      id={styles.on}
-      style={{opacity}}>
+    <li id={`${listitem.ListID}`}>
+      {
+        listitem.aircraft.id>0?
+        <div className={styles.aircraft_item} id={styles.on}>
+          <img src="/aircraft_mini.png" draggable="false" alt="aircraft"/>
+          <p>{listitem.aircraft.level}</p>
+          <h2>level {listitem.aircraft.level}</h2>
+          <h3>${listitem.aircraft.money_per_second.toFixed(2)} p/ sec</h3>
+        </div>:
+        <div className={styles.aircraft_item} id={styles.off}>
+          <FiPlus />
+          <h2></h2>
+        </div>
 
-      <img src="aircraft_mini.png"/>
-      <p>{aircraftObject.level}</p>
-      <h2>level {aircraftObject.level}</h2>
-      <h3>${aircraftObject.money_per_second} p/ sec</h3>
-    </div> 
+      }
+      
+    </li> 
   )
 }
