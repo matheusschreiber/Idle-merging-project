@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 
 import styles from '../styles/Home.module.css'
 
@@ -20,7 +19,7 @@ import {
   handleEditAircraft,
   handleListAircraft,
   handleGetAircraft
-} from '../services/crud_aircrafts'
+} from '../services/aircraft'
 
 import {
   handleNewPlayer,
@@ -28,10 +27,7 @@ import {
   handleDeletePlayer,
   handleListPlayer,
   handleGetPlayer
-} from '../services/crud_players'
-
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+} from '../services/player'
 
 const Home: NextPage = () => {
 
@@ -63,13 +59,11 @@ const Home: NextPage = () => {
 
         {
           player?
-          <DndProvider backend={HTML5Backend}>
-            <AircraftPanel playerID={player.id} />
-          </DndProvider>
+          <AircraftPanel {...player} />
           :"Loading..."
         }
 
-        <Ring />
+        <Ring {...player}/>
 
 
       </main>
