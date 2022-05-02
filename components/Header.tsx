@@ -9,39 +9,28 @@ import { Aircraft } from '../types/Aircraft.types'
 
 import { Button } from './Button'
 
-import {
-  handleNewAircraft,
-  handleDeleteAircraft,
-  handleEditAircraft,
-  handleListAircraft,
-  handleGetAircraft
-} from '../services/aircraft'
+import { handleGetAircraft } from '../services/aircraft'
+import { handleEditPlayer } from '../services/player'
 
-import {
-  handleNewPlayer,
-  handleEditPlayer,
-  handleDeletePlayer,
-  handleListPlayer,
-  handleGetPlayer
-} from '../services/player'
+type HeaderObject = {
+  playerImported: Player,
+  flowImported: number
+}
 
-export const Header: NextPage<Player> = (playerImported:Player) => {
+export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) => {
   const [ flow, setFlow ] = useState<number>(0)
   const [ player, setPlayer ] = useState<Player>(playerImported)
   const [ autosave, setAutoSave ] = useState<number>(0)
-  const [ maintenanceMode, setMaintenanceMode ] = useState<boolean>(true)
+  const [ maintenanceMode, setMaintenanceMode ] = useState<boolean>(false)
+
   const autoSaveDelay = 1200 //on seconds (20 minutes)
 
-  async function getFlow(){
-    let flowSum = 0
-    await Promise.all(
-      player.aircrafts.split(',').map(async (id:string)=>{
-        const aircraft:Aircraft = await handleGetAircraft(parseInt(id))
-        flowSum += aircraft.money_per_second
-      })
-    )
-
-    setFlow(flowSum)
+  function formatValue(value:number){
+    if (value>=1000000) return `${(value/1000000).toFixed(2)} million`
+    else if (value>=1000000000) return `${(value/1000000000).toFixed(2)} billion`
+    else if (value>=1000000000000) return `${(value/1000000000000).toFixed(2)} trillion`
+    else if (value>=1000000000000000) return `${(value/1000000000000000).toFixed(2)} quadrillion`
+    else if (value>=1000000000000000) return `${(value/1000000000000000).toFixed(2)} quintillion`
   }
 
   async function saveGame() {
@@ -63,9 +52,8 @@ export const Header: NextPage<Player> = (playerImported:Player) => {
   
   
   useEffect(()=>{
+    setFlow(flowImported)
     if (!player || maintenanceMode) return
-
-    getFlow()
 
     const gameLoop = setInterval(() => {
       let playerCopy = {...player}
@@ -85,7 +73,7 @@ export const Header: NextPage<Player> = (playerImported:Player) => {
   return(
     <div className={styles.container}>
       <h1>$ {player.wallet?player.wallet.toFixed(2):'loading...'}</h1>
-      <p>${flow} per second</p>
+      <p>${flow.toFixed(2)} per second</p>
       <div 
         className={styles.button_container}
         onClick={saveGame}><Button text="Save game" /></div>

@@ -41,9 +41,11 @@ export const RingAircraft:NextPage<circleProps> = (props:circleProps) => {
       
       setYi(ellipseEquation(xi)*factor)
       setXi(xi+factor*velocity)
-
+      
       setX(xi+ellipseXRadius+10)
       setY((ellipseEquation(xi)*factor)+ellipseYRadius+10)
+
+      if (!(ellipseEquation(xi)*factor)) setY(ellipseYRadius+10)
     }, framerate);
 
     return () => clearInterval(loop);

@@ -7,7 +7,11 @@ import { useEffect, useState } from 'react'
 import { handleListAircraft } from "../services/aircraft"
 import { Aircraft } from "../types/Aircraft.types"
 
-export const Ring:NextPage<Player> = (player) => {
+type RingObject = {
+  player:Player
+}
+
+export const Ring:NextPage<RingObject> = ({player}) => {
   
   const ellipseXRadius = 300
   const ellipseYRadius = 50
@@ -53,11 +57,18 @@ export const Ring:NextPage<Player> = (player) => {
           fill="rgba(0,0,0,0)"/>
         
         {
-         aircrafts?.map((a,pos)=>(
-            a.id>0?
-            <RingAircraft key={pos} start={Math.random()*ellipseXRadius - Math.random()*ellipseXRadius} velocity={Math.random()*2} color={pickColor(a.level)}/>
-            :""
-          ))
+          aircrafts?.map((a,pos)=>{
+            const randomStart = ellipseXRadius - Math.round(Math.random()*ellipseXRadius)
+            return (
+              a.id>0?
+              <RingAircraft 
+                key={pos}
+                start={randomStart}
+                velocity={Math.random()*2}
+                color={pickColor(a.level)}/>
+              :""
+            )
+          })
         }
 
       </svg>

@@ -15,11 +15,16 @@ type ListItem = {
   ListID: number
 }
 
+type PanelObject = {
+  player: Player,
+  setShowing: Function,
+  getFlow: Function
+}
 
-export const AircraftPanel:NextPage<Player> = (player) => {
+export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow}) => {
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([])
   const [ update, setUpdate ] = useState()
-  const [ draggableState, setDraggableState ] = useState();
+  const [ draggableState, setDraggableState ] = useState<any>();
 
   async function loadAircrafts(){
     let aux = await handleListAircraft(player.id)
@@ -53,20 +58,29 @@ export const AircraftPanel:NextPage<Player> = (player) => {
   }
   
 
-  async function checkMatch(start:HTMLElement, end:HTMLElement, draggable, aircraftArray:Aircraft[]){    
+  async function checkMatch(start:HTMLElement, end:HTMLElement, draggable:any, aircraftArray:Aircraft[]){    
     if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
-      aircraftArray = await updateAircraft(start.id, end.id, [...aircraftArray])
+      aircraftArray = await updateAircraft(parseInt(start.id), parseInt(end.id), [...aircraftArray])
     } else if (end.children[0].children[1].innerHTML==="") {
-      aircraftArray[end.id] = {...aircraftArray[start.id]}
-      aircraftArray[start.id].id *= -1
+      aircraftArray[parseInt(end.id)] = {...aircraftArray[parseInt(start.id)]}
+      aircraftArray[parseInt(start.id)].id *= -1
     }
 
     draggable.destroy()
+
+    let flow = 0;
+    aircraftArray.map((a)=>flow+=a.money_per_second)
+    getFlow(flow)
+    
     setAircrafts(aircraftArray)
     loadDrag(aircraftArray)
   }
 
   const addAircraft = async () => {
+    let flow = 0;
+    aircrafts.map((a)=>flow+=a.money_per_second)
+    getFlow(flow)
+
     let idToBeReplaced:number=0;
     aircrafts.map((a,pos)=>{
       if (a.id<0) {
@@ -112,7 +126,7 @@ export const AircraftPanel:NextPage<Player> = (player) => {
     });
 
     draggable.on("drag:move", () => {
-      let element:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0]
+      let element:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
       element.style.visibility = 'hidden';   
     });
 
@@ -122,8 +136,8 @@ export const AircraftPanel:NextPage<Player> = (player) => {
       // })
 
     draggable.on("drag:stop", () => {
-      let start:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0]
-      let end:HTMLElement = document.getElementsByClassName('draggable--over')[0]
+      let start:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
+      let end:HTMLElement = document.getElementsByClassName('draggable--over')[0] as HTMLElement
 
       if (!start || !end) return
       checkMatch(start, end, draggable, aircrafts) 
@@ -134,13 +148,12 @@ export const AircraftPanel:NextPage<Player> = (player) => {
 
   useEffect(()=>{
     loadAircrafts()
-    console.log('updated')
   },[update])
     
   return(
     <div className={styles.container}>
       
-      <div className={styles.title}>
+      <div className={styles.title} onClick={()=>setShowing(0)}>
         <h1>FLYING</h1>
       </div>
 
