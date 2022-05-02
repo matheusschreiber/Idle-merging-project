@@ -2,3 +2,32 @@
   background-image: url("../public/background.png");
   height: 100vh;
 }
+
+.container aside {
+  position:absolute;
+  top: 100px;
+}
+
+
+.container aside ul li {
+  margin-left: -70px;
+
+  height: 30px;
+  width: 200px;
+  padding-right: 50px;
+  margin-top: 10px;
+
+  cursor: pointer;
+  text-align: right;
+  border-radius: 100px;
+  background-color: var(--gray);
+  color: var(--dark_gray);
+  font-weight: bold;
+  transition: .2s;
+}
+
+.container aside ul li:hover{
+  color: white;
+  background-color: var(--redish);
+  margin-left: -20px;
+}

@@ -1,0 +1,73 @@
+.main_container{
+  background-image: url("../public/background.png");
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.main_container input {
+  background-color: transparent;
+  border: none;
+  font-size: 90pt;
+  text-align: center;
+  color: var(--light_white);  
+}
+
+.main_container input:focus {
+  outline: none !important;
+  border:none;
+}
+
+.main_container div#divider {
+  height: 10px;
+  background-color: var(--redish);
+  width: 800px;
+}
+
+.main_container input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--light_white);
+  opacity: 1; /* Firefox */
+}
+
+.main_container input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: var(--light_white);
+}
+
+.main_container input::-ms-input-placeholder { /* Microsoft Edge */
+  color: var(--light_white);
+}
+
+#new_player {
+  margin-top: 200px;
+  background-color: var(--light_white);
+  border-radius: 100px;
+  height: 30px;
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  
+  transition: .2s;
+}
+
+#new_player_selector {
+  position: relative;
+  left: -26%;
+  height: 95%;
+  width: 45%;
+  border-radius: 100px;
+  background-color: var(--dark_gray);
+  
+  transition: .2s;
+}
+
+#new_player h1 {
+  position: absolute;
+  margin-top: -4%;
+  font-size: 12pt;
+}
