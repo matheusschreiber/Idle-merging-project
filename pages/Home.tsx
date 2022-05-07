@@ -41,6 +41,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <h1>{player?player.name:""}</h1>
       <aside>
         <ul>
           <li

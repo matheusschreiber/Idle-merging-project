@@ -4,6 +4,8 @@ import Swal from 'sweetalert2'
 
 import styles from '../styles/components/Header.module.css'
 
+import { FiArrowLeftCircle  } from 'react-icons/fi'
+
 import { Player } from '../types/Player.types'
 import { Aircraft } from '../types/Aircraft.types'
 
@@ -11,6 +13,7 @@ import { Button } from './Button'
 
 import { handleGetAircraft } from '../services/aircraft'
 import { handleEditPlayer } from '../services/player'
+import Router from 'next/router'
 
 type HeaderObject = {
   playerImported: Player,
@@ -31,6 +34,7 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
     else if (value>=1000000000000) return `${(value/1000000000000).toFixed(2)} trillion`
     else if (value>=1000000000000000) return `${(value/1000000000000000).toFixed(2)} quadrillion`
     else if (value>=1000000000000000) return `${(value/1000000000000000).toFixed(2)} quintillion`
+    else return value.toFixed(2)
   }
 
   async function saveGame() {
@@ -72,12 +76,16 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
 
   return(
     <div className={styles.container}>
-      <h1>$ {player.wallet?player.wallet.toFixed(2):'loading...'}</h1>
+      <h1>${player.wallet?formatValue(player.wallet):'loading...'}</h1>
       <p>${flow.toFixed(2)} per second</p>
-      <div 
-        className={styles.button_container}
-        onClick={saveGame}><Button text="Save game" /></div>
-      
+      <div className={styles.button_container_box}>
+        <div 
+          className={styles.save_game_container}
+          onClick={saveGame}><Button text="Save game" /></div>
+        <div 
+          className={styles.logout_container}
+          onClick={()=>Router.push('/')}><FiArrowLeftCircle /></div>
+      </div>
     </div>
   )
 }

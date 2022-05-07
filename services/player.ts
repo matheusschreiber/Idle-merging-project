@@ -1,6 +1,8 @@
 import api from './api'
 import Swal from 'sweetalert2'
 
+import crypto from 'crypto'
+
 import { Player } from '../types/Player.types'
 
 export async function handleNewPlayer(name:String, password:String){
@@ -45,4 +47,17 @@ export const handleGetPlayer:handleGetPlayer = async (id) => {
   } catch {
     Swal.fire('Something went wrong', 'Error at player search, please report this bug on the github comments', 'error')
   }
+}
+
+export const handleLoginPlayer = async (name:string, pass:string) => {
+  try {
+    const response = await api.put('get/player', {name:name})
+    const hash = crypto.createHash('sha256');
+    hash.update(pass)  
+    if(hash.digest("hex")==response.data.password) return response.data
+    else return 0
+  } catch (err) {
+    Swal.fire('Something went wrong', 'Error at player login, please report this bug on the github comments', 'error')
+  }
+
 }
