@@ -13,25 +13,28 @@ import { Header } from '../components/Header'
 import { Ring } from '../components/Ring'
 
 import { handleGetPlayer } from '../services/player'
+import { useContextValue } from '../services/ContextElement'
 
 const Home: NextPage = () => {
-
   const [ player, setPlayer ] = useState<Player>()
   const [ showing, setShowing ] = useState<number>(0)
   const [ flow, setFlow ] = useState<number>(0)
   
+  const { name, timer, setGlobalTimer } = useContextValue()
+
   async function loadPlayerData(){
-    const player:Player = await handleGetPlayer(1)
+    const player:Player = await handleGetPlayer({id: undefined, name:name})
     setPlayer(player)  
   }     
 
-  function getFlow(f:number){ 
-    setFlow(f)
-   }
+  async function reloadPlayer(id:number){
+    const player:Player = await handleGetPlayer({id, name:undefined})
+    setPlayer(player)
+  }
 
   useEffect(()=>{
     loadPlayerData()
-  }, [])  
+  }, [name])  
    
   return (
     <div className={styles.container}>
@@ -41,7 +44,6 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>{player?player.name:""}</h1>
       <aside>
         <ul>
           <li
@@ -72,7 +74,12 @@ const Home: NextPage = () => {
               STORE
             </li>
 
-          <li onClick={()=>setShowing(2)}>FLYING</li>
+          <li onClick={()=>setShowing(2)}>
+            FLYING
+            <div 
+            style={{width:(10-timer)*10+40+"%"}}
+            ></div>
+          </li>
         </ul>      
       </aside>
 
@@ -84,7 +91,16 @@ const Home: NextPage = () => {
         }
 
         <div style={player&&showing==2?{}:{visibility:'hidden'}}>
-          {     player  ? <AircraftPanel player={player} setShowing={setShowing} getFlow={getFlow}/> : ""   }
+          {     
+            player  ?
+            <AircraftPanel 
+              player={player} 
+              setGlobalTimer={setGlobalTimer}
+              reloadPlayer={reloadPlayer}
+              setShowing={setShowing} 
+              setFlow={setFlow}/> 
+            : ""
+          }
         </div>
 
         { player  ? <Ring player={player}/> : "" }

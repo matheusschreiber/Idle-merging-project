@@ -6,6 +6,7 @@ import Head from "next/head"
 
 import { handleLoginPlayer, handleNewPlayer } from '../services/player'
 
+import { useContextValue } from '../services/ContextElement'
 
 import styles from '../styles/Login.module.css'
 import Swal from 'sweetalert2'
@@ -14,6 +15,8 @@ const Login:NextPage = () =>{
   const [ login, setLogin ] = useState<string>("")
   const [ password, setPassword ] = useState<string>("")
   const [ newPlayer, setNewPlayer ] = useState<boolean>(false)  
+
+  const { name, setName } = useContextValue()
 
   async function handleSubmit(e:FormEvent){
     e.preventDefault()
@@ -29,8 +32,10 @@ const Login:NextPage = () =>{
           title: 'Successfully logged in',
           text: 'Redirecting...',
           icon: 'success',
+          showConfirmButton: false,
           timer: 1500
         })
+        setName(login)
         Router.push('/Home')
       }
     } else {
@@ -45,7 +50,10 @@ const Login:NextPage = () =>{
           await handleNewPlayer(login, password)
           Swal.fire('New player registered!', '', 'success')
         }
-      }).then(()=>Router.push('/Home'))
+      }).then(()=>{
+        setName(login)
+        Router.push('/Home')
+      })
     }
   }
 

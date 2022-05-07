@@ -5,9 +5,22 @@ import crypto from 'crypto'
 
 import { Player } from '../types/Player.types'
 
+import { Aircraft } from '../types/Aircraft.types'
+
+import {
+  handleListAircraft,
+  handleDeleteAircraft
+} from './aircraft'
+
 export async function handleNewPlayer(name:String, password:String){
   try {
-    await api.post('new/player', {name,password})
+    const player = await api.post('new/player', {name,password})
+    await api.post('new/aircraft', {
+      player_id: player.data.id,
+      level: 1,
+      money_per_second: 10,
+      bonus_multiplier: 1,
+    })
   } catch {
     Swal.fire('Something went wrong', 'Error at player creation, please report this bug on the github comments', 'error')
   }
@@ -21,8 +34,14 @@ export async function handleEditPlayer(player:Player){
   }
 }
 
-export async function handleDeletePlayer(id:Number){
+export async function handleDeletePlayer(id:number){
   try {
+    const aircrafts:Aircraft[] = await handleListAircraft(id)
+    
+    await Promise.all(aircrafts.map(async(a)=>{
+      await handleDeleteAircraft(a.id)
+    }))
+
     await api.put('delete/player', {id:id})
   } catch {
     Swal.fire('Something went wrong', 'Error at player deletion, please report this bug on the github comments', 'error')
@@ -39,11 +58,18 @@ export const handleListPlayer:handleListPlayer = async () => {
   }
 }
 
-type handleGetPlayer = (id:Number) => Promise<Player>
-export const handleGetPlayer:handleGetPlayer = async (id) => {
+type playerNameOrId = {
+  id: number | undefined,
+  name: string | undefined
+}
+type handleGetPlayer = (obj:playerNameOrId) => Promise<Player>
+export const handleGetPlayer:handleGetPlayer = async (obj:playerNameOrId) => {
   try {
-    const response = await api.put('get/player', {id:id})
-    return response.data
+    let response;
+    if (obj.id) response = await api.put('get/player', {id:obj.id})
+    else if (obj.name) response = await api.put('get/player', {name:obj.name})
+
+    return response?.data;
   } catch {
     Swal.fire('Something went wrong', 'Error at player search, please report this bug on the github comments', 'error')
   }

@@ -39,7 +39,7 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
 
   async function saveGame() {
     if (!player) return
-
+    
     let value = {...player}
     value.wallet = parseFloat(value.wallet.toFixed(2))
     await handleEditPlayer(value)
@@ -53,6 +53,8 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
       timer: 1500
     })
   }
+
+  useEffect(()=>setPlayer(playerImported), [playerImported])
   
   
   useEffect(()=>{
@@ -72,7 +74,7 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
     }
     
     return () => clearInterval(gameLoop);
-  }, [player, autosave, flow]) 
+  }, [player, autosave, flow, flowImported, maintenanceMode]) 
 
   return(
     <div className={styles.container}>

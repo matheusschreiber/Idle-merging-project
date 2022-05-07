@@ -6,7 +6,13 @@ import { Player } from "../types/Player.types"
 
 import styles from '../styles/components/AircraftPanel.module.css'
 
-import { handleNewAircraft, handleListAircraft, handleUpgradeAircraft } from '../services/aircraft'
+import {
+  handleNewAircraft,
+  handleListAircraft,
+  handleUpgradeAircraft,
+  handleDeleteAircraft
+} from '../services/aircraft'
+
 import { AircraftItem } from "./AircraftItem"
 import { LoadingBar } from "./LoadingBar"
 
@@ -17,25 +23,28 @@ type ListItem = {
 
 type PanelObject = {
   player: Player,
+  reloadPlayer: Function,
   setShowing: Function,
-  getFlow: Function
+  setFlow: Function,
+  setGlobalTimer: Function
 }
 
-export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow}) => {
+export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setShowing, setFlow, setGlobalTimer}) => {
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([])
   const [ update, setUpdate ] = useState()
   const [ draggableState, setDraggableState ] = useState<any>();
-
+  
   async function loadAircrafts(){
     let aux = await handleListAircraft(player.id)
 
     const length = aux.length
+
     if(length<6) for(let i=0;i<6-length;i++) {
       let fakeAircraft:Aircraft = {...aux[0]}
       fakeAircraft.id*=-1
       aux.push(fakeAircraft)
     }
-   
+    
     setAircrafts(aux)
     loadDrag(aux)
   }
@@ -61,28 +70,29 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow
   async function checkMatch(start:HTMLElement, end:HTMLElement, draggable:any, aircraftArray:Aircraft[]){    
     if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
       aircraftArray = await updateAircraft(parseInt(start.id), parseInt(end.id), [...aircraftArray])
-    } else if (end.children[0].children[1].innerHTML==="") {
+    } else {
+      const copy = {...aircraftArray[parseInt(end.id)]}
       aircraftArray[parseInt(end.id)] = {...aircraftArray[parseInt(start.id)]}
-      aircraftArray[parseInt(start.id)].id *= -1
+      aircraftArray[parseInt(start.id)] = {...copy}
     }
 
     draggable.destroy()
 
     let flow = 0;
-    aircraftArray.map((a)=>flow+=a.money_per_second)
-    getFlow(flow)
+    aircraftArray.map((a)=>{
+      if (a.id>0) flow+=a.money_per_second
+    })
+    setFlow(flow)
     
+    reloadPlayer(player.id)
     setAircrafts(aircraftArray)
+    
     loadDrag(aircraftArray)
   }
 
-  const addAircraft = async () => {
-    let flow = 0;
-    aircrafts.map((a)=>flow+=a.money_per_second)
-    getFlow(flow)
-
+  const addAircraft = async (aircraftImportedArray:Aircraft[]) => {
     let idToBeReplaced:number=0;
-    aircrafts.map((a,pos)=>{
+    aircraftImportedArray.map((a,pos)=>{
       if (a.id<0) {
         idToBeReplaced=pos
         return
@@ -101,6 +111,14 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow
     })
     
     aircraftsArray[idToBeReplaced] = newAircraft
+
+    let flow = 0;
+    aircraftsArray.map((a)=>{
+      if (a.id>=0) flow+=a.money_per_second
+    })
+    setFlow(flow)
+
+    reloadPlayer(player.id)
     setAircrafts(aircraftsArray)     
     loadDrag(aircraftsArray)
   }
@@ -135,12 +153,12 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow
       //   console.log(element.children[0].children[1].innerHTML)
       // })
 
-    draggable.on("drag:stop", () => {
+    draggable.on("drag:stop", async () => {
       let start:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
       let end:HTMLElement = document.getElementsByClassName('draggable--over')[0] as HTMLElement
 
       if (!start || !end) return
-      checkMatch(start, end, draggable, aircrafts) 
+      await checkMatch(start, end, draggable, aircrafts) 
     })
 
     setDraggableState(draggable)
@@ -159,6 +177,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow
 
       <ul className={styles.content}>
         {
+          aircrafts.length?
           aircrafts.map((aircraft,pos) =>{
             let listitem:ListItem = {
               aircraft:aircraft,
@@ -167,10 +186,14 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, setShowing, getFlow
 
             return <AircraftItem key={pos} {...listitem} /> 
           })
+          :""
         }
       </ul>
 
-      <LoadingBar addAircraft={addAircraft} />
+      <LoadingBar 
+        addAircraft={addAircraft}
+        aircrafts={aircrafts}
+        setGlobalTimer={setGlobalTimer} />
 
     </div>
   )

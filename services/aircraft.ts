@@ -26,7 +26,7 @@ export async function handleEditAircraft(aircraft:Aircraft){
   }
 }
 
-export async function handleDeleteAircraft(id:Number){
+export async function handleDeleteAircraft(id:number){
   try {
     await api.put('delete/aircraft', {id:id})
   } catch {
