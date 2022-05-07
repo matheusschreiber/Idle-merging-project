@@ -15,18 +15,39 @@
   color: var(--redish);
 }
 
-.button_container {
+.save_game_container {
   background-color: var(--redish);
   border-radius: 100px;
   padding: 1px 10px;
   cursor:pointer;
   border: 2px inset rgba(0,0,0,0);
-  position: absolute;
-  top: 10px;
-  right: 100px;
+  transition: .2s;
+  height: fit-content;
+}
+
+.save_game_container:hover {
+  transform: scale(.9);
+}
+
+.button_container_box{
+  margin-right: -80vw;
+  margin-top: -12vh;
+  
+  display: flex;
+  width: 150px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout_container {
+  font-size: 20pt;
+  color: var(--redish);
+  cursor: pointer;
+  margin-top: 10px;
   transition: .2s;
 }
 
-.button_container:hover {
-  transform: scale(.9);
+.logout_container:hover {
+  color: var(--light_white);
+  transform: scale(.8)
 }
