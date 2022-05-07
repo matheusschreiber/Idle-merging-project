@@ -23,10 +23,19 @@
   color: var(--dark_gray);
   font-weight: bold;
   transition: .2s;
+  overflow: hidden;
 }
 
 .container aside ul li:hover{
   color: white;
   background-color: var(--redish);
   margin-left: -20px;
+}
+
+.container aside ul li div {
+  background-color: var(--redish);
+  height: 30px;
+  width: 140%;
+  margin-top: -24px;
+  transition: .2s;
 }
