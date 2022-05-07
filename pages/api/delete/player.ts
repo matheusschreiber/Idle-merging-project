@@ -10,10 +10,10 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
   const [ player ] = await connection('players').where('id',id)
   
   if (!player) {
-    res.status(404).json({error:'Player with id ' + id + ' not found'})
+    return res.status(404).json({error:'Player with id ' + id + ' not found'})
   }
 
   await connection('players').where('id',id).del()
 
-  res.status(200).json(player)
+  return res.status(200).json(player)
 }

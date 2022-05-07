@@ -23,5 +23,5 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
 
   
   
-  res.status(200).json(aircrafts)
+  return res.status(200).json(aircrafts)
 }

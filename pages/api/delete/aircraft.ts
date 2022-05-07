@@ -10,7 +10,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
   const [ aircraft ] = await connection('aircrafts').where('id',id).select('*')
 
   if (!aircraft) {
-    return res.status(404)
+    return res.status(404).json({error:'not found'})
   }
 
   const [ player ] = await connection('players').where('id', aircraft.player_id).select('*')
@@ -24,5 +24,5 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
 
   await connection('aircrafts').where('id',id).del()
 
-  res.status(200).json(aircraft)
+  return res.status(200).json(aircraft)
 }

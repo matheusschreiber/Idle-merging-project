@@ -17,14 +17,14 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<A
   let [ player ] = await connection('players').where('id',player_id)
   
   if (!player) {
-    res.status(404).json({error:'Player with id ' + player_id + ' not found'})
+    return res.status(404).json({error:'Player with id ' + player_id + ' not found'})
   }
 
   let player_aircrafts:Number[] = []
   if (player.aircrafts) player.aircrafts.split(',').map((i:string)=>player_aircrafts.push(parseInt(i)))
 
   if (player_aircrafts.length === 6) {
-    res.status(403).json({error:'Player has reached maximum amount of aircrafts'})
+    return res.status(403).json({error:'Player has reached maximum amount of aircrafts'})
   }
 
   const [ id ] = await connection('aircrafts').insert(aircraftTemplate)
@@ -40,5 +40,5 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<A
     bonus_multiplier:aircraftTemplate.bonus_multiplier,
   }
   
-  res.status(200).json(aircraft)
+  return res.status(200).json(aircraft)
 }

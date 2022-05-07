@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<P
   const { name, password } = req.body;
   
   const hash = crypto.createHash('sha256');
-  hash.update(password)  
+  hash.update(password)   
   
   const playerTemplate = {
     rank:0,

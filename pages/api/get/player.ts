@@ -13,7 +13,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
   else if (name) [ player ] = await connection('players').where('name', name)
   
   if (!player) {
-    res.status(404).json({error:'Player with id ' + id + ' not found'})
+    return res.status(404).json({error:'Player with id ' + id + ' not found'})
   }
   res.status(200).json(player)
 }

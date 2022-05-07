@@ -11,7 +11,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
   const [found] = await connection('players').where('id',id)
   
   if (!found) {
-    res.status(404).json({error:'Player not found'})
+    return res.status(404).json({error:'Player not found'})
   }
   
   const hash = crypto.createHash('sha256')
@@ -20,5 +20,5 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
 
   await connection('players').where('id',id).update(player)
 
-  res.status(200).json(player)
+  return res.status(200).json(player)
 }

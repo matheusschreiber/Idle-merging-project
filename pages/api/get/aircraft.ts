@@ -10,7 +10,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
   const [ aircraft ] = await connection('aircrafts').where('id',id)
   
   if (!aircraft) {
-    res.status(404).json({error:'Aircraft with id ' + id + ' not found'})
+    return res.status(404).json({error:'Aircraft with id ' + id + ' not found'})
   }
   
   res.status(200).json(aircraft)

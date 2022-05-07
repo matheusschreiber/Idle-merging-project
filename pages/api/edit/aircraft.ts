@@ -13,7 +13,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
   const found = await connection('aircrafts').where('id',id).select('*')
 
   if (!found) {
-    res.status(404).json({error:'Aircraft not found'})
+    return res.status(404).json({error:'Aircraft not found'})
   }
   
   const aircraft = {id, player_id, level, money_per_second, bonus_multiplier}
@@ -25,10 +25,10 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
     !aircraft.money_per_second ||
     !aircraft.bonus_multiplier
     ) {
-      res.status(403).json({error: 'Missing information'})
+      return res.status(403).json({error: 'Missing information'})
     }
 
   await connection('aircrafts').where('id',id).update(aircraft)
 
-  res.status(200).json(aircraft)
+  return res.status(200).json(aircraft)
 }
