@@ -5,18 +5,7 @@ import crypto from 'crypto'
 
 import { Player } from '../../../types/Player.types'
 
-//Importing cors middleware necessities
-import Cors from 'cors'
-import initMiddleware from '../../../lib/init-middleware'
-
-// Initialize the cors middleware
-const cors = initMiddleware(
-  // You can read more about the available options here: https://github.com/expressjs/cors#configuration-options
-  Cors({
-    // Only allow requests with GET, POST and OPTIONS
-    methods: ['GET', 'POST', 'OPTIONS'],
-  })
-)
+import cors from '../cors'
 
 export default async function handler(req: NextApiRequest,res: NextApiResponse<Player>) {
   await cors(req,res)
