@@ -14,6 +14,8 @@ import { Ring } from '../components/Ring'
 
 import { handleGetPlayer } from '../services/player'
 import { useContextValue } from '../services/ContextElement'
+import Swal from 'sweetalert2'
+import Router from 'next/router'
 
 const Home: NextPage = () => {
   const [ player, setPlayer ] = useState<Player>()
@@ -23,7 +25,12 @@ const Home: NextPage = () => {
   const { name, timer, setGlobalTimer } = useContextValue()
 
   async function loadPlayerData(){
-    const player:Player = await handleGetPlayer({id: undefined, name:name})
+    if (name=='null' && !localStorage.getItem('IDLE_PLAYER')) {
+      Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
+      Router.push('/')
+      return
+    }
+    const player:Player = await handleGetPlayer({id: undefined, name:name!=='null'?name:localStorage.getItem('IDLE_PLAYER')})
     setPlayer(player)  
   }     
 

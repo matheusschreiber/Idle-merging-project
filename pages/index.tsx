@@ -4,7 +4,11 @@ import Router from 'next/router'
 
 import Head from "next/head"
 
-import { handleLoginPlayer, handleNewPlayer } from '../services/player'
+import { 
+  handleLoginPlayer,
+  handleNewPlayer,
+  handleDeletePlayer
+ } from '../services/player'
 
 import { useContextValue } from '../services/ContextElement'
 
@@ -35,6 +39,7 @@ const Login:NextPage = () =>{
           showConfirmButton: false,
           timer: 1500
         })
+        localStorage.setItem('IDLE_PLAYER', login)
         setName(login)
         Router.push('/Home')
       }
@@ -52,6 +57,7 @@ const Login:NextPage = () =>{
         }
       }).then(()=>{
         setName(login)
+        localStorage.setItem('IDLE_PLAYER', login)
         Router.push('/Home')
       })
     }
@@ -80,6 +86,8 @@ const Login:NextPage = () =>{
         <h1>new player</h1>
         <div id={styles.new_player_selector} style={newPlayer?{left:'+26%', backgroundColor:'var(--redish)'}:{}}></div>
       </div>
+
+      {/* <button onClick={()=>handleDeletePlayer(19)}>delete player</button> */}
     </div>
   )
 }
