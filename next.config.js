@@ -2,6 +2,7 @@
 
 
 module.exports = {
+  reactStrictMode:false,
   async headers() {
     return [
       {

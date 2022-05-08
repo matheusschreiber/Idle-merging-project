@@ -70,8 +70,9 @@ export const handleGetPlayer:handleGetPlayer = async (obj:playerNameOrId) => {
     else if (obj.name) response = await api.put('get/player', {name:obj.name})
 
     return response?.data;
-  } catch {
-    Swal.fire('Something went wrong', 'Error at player search, please report this bug on the github comments', 'error')
+  } catch (err) {
+    Swal.fire('Something went wrong', 'Error at player search (probably cors block), please report this bug on the github comments', 'error')
+    console.log(err)
   }
 }
 

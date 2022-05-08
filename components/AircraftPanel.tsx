@@ -35,7 +35,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
   const [ draggableState, setDraggableState ] = useState<any>();
   
   async function loadAircrafts(){
-    let aux = await handleListAircraft(player.id)
+    let aux:Aircraft[] = await handleListAircraft(player.id)
 
     const length = aux.length
 
@@ -44,6 +44,12 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
       fakeAircraft.id*=-1
       aux.push(fakeAircraft)
     }
+
+    let flow = 0;
+    aux.map((a)=>{
+      if (a && a.id>=0) flow+=a.money_per_second
+    })
+    setFlow(flow)
     
     setAircrafts(aux)
     loadDrag(aux)
@@ -114,7 +120,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
     let flow = 0;
     aircraftsArray.map((a)=>{
-      if (a.id>=0) flow+=a.money_per_second
+      if (a && a.id>=0) flow+=a.money_per_second
     })
     setFlow(flow)
 

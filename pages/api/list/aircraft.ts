@@ -17,7 +17,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Ai
 
     await Promise.all(player_aircrafts_string.map(async(i:string)=>{
       const [ aircraft ] = await connection('aircrafts').where('id', parseInt(i))
-      aircrafts.push(aircraft)
+      if (aircraft) aircrafts.push(aircraft)
     }))
   }
 
