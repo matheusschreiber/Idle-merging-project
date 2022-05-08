@@ -24,13 +24,14 @@ const Home: NextPage = () => {
   
   const { name, timer, setGlobalTimer } = useContextValue()
 
-  async function loadPlayerData(){
+  async function loadPlayerData(){    
     if (name=='null' && !localStorage.getItem('IDLE_PLAYER')) {
       Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
       Router.push('/')
       return
     }
-    const player:Player = await handleGetPlayer({id: undefined, name:name!=='null'?name:localStorage.getItem('IDLE_PLAYER')})
+    const s = localStorage.getItem('IDLE_PLAYER');
+    const player:Player = await handleGetPlayer({id: undefined, name:name!=='null'?name:s?s:" "})
     setPlayer(player)  
   }     
 
