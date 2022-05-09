@@ -1,6 +1,7 @@
 .container {
   background-image: url("../public/background.png");
   height: 100vh;
+  overflow-x:hidden;
 }
 
 .container aside {

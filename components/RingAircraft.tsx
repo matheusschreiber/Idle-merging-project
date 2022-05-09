@@ -1,6 +1,8 @@
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
 
+import styles from '../styles/components/Ring.module.css'
+
 type circleProps = {
   start:number,
   velocity: number,
@@ -21,6 +23,8 @@ export const RingAircraft:NextPage<circleProps> = (props:circleProps) => {
   const framerate = 10 //iterations per second
   const ellipseXRadius = 300
   const ellipseYRadius = 50
+  const offsetX = 10
+  const offsetY = 50
 
   function ellipseEquation(x:number){
     return ((1 - ((x**2)/(ellipseXRadius**2))) * (ellipseYRadius**2)) ** (0.5)
@@ -42,10 +46,10 @@ export const RingAircraft:NextPage<circleProps> = (props:circleProps) => {
       setYi(ellipseEquation(xi)*factor)
       setXi(xi+factor*velocity)
       
-      setX(xi+ellipseXRadius+10)
-      setY((ellipseEquation(xi)*factor)+ellipseYRadius+10)
+      setX(xi+ellipseXRadius+offsetX)
+      setY((ellipseEquation(xi)*factor)+ellipseYRadius+offsetY)
 
-      if (!(ellipseEquation(xi)*factor)) setY(ellipseYRadius+10)
+      if (!(ellipseEquation(xi)*factor)) setY(ellipseYRadius+offsetY)
     }, framerate);
 
     return () => clearInterval(loop);

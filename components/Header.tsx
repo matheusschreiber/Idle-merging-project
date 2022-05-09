@@ -40,6 +40,9 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
   async function saveGame() {
     if (!player) return
     
+    console.log('saving this player: ')
+    console.log(player)
+    
     let value = {...player}
     value.wallet = parseFloat(value.wallet.toFixed(2))
     await handleEditPlayer(value)

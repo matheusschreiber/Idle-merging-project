@@ -14,7 +14,7 @@ export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
   return(
     <li id={`${listitem.ListID}`}>
       {
-        listitem.aircraft.id>0?
+        listitem.aircraft&&listitem.aircraft.id>0?
         <div className={styles.aircraft_item} id={styles.on}>
           <img src="/aircraft_mini.png" draggable="false" alt="aircraft"/>
           <p>{listitem.aircraft.level}</p>

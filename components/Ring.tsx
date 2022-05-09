@@ -15,6 +15,11 @@ export const Ring:NextPage<RingObject> = ({player}) => {
   
   const ellipseXRadius = 300
   const ellipseYRadius = 50
+  const offsetX = 10
+  const offsetY = 50
+
+  const planetRadius = 100
+  const planetColor = 'var(--super_dark_gray)'
   
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>()
 
@@ -49,7 +54,15 @@ export const Ring:NextPage<RingObject> = ({player}) => {
   return(
     <div className={styles.container}>
       <svg>
-        <ellipse cx={ellipseXRadius+10} cy={ellipseYRadius+10} rx={ellipseXRadius} ry={ellipseYRadius}
+
+        <defs>
+          <clipPath id="cut-off-top">
+            <rect x={ellipseXRadius-planetRadius+offsetX} y={ellipseYRadius+offsetY} width={planetRadius*2} height={planetRadius} />
+          </clipPath>
+        </defs>
+        <circle cx={ellipseXRadius+offsetX} cy={ellipseYRadius+offsetY} r={planetRadius} clipPath="url(#cut-off-top)" fill={planetColor}/>
+
+        <ellipse cx={ellipseXRadius+offsetX} cy={ellipseYRadius+offsetY} rx={ellipseXRadius} ry={ellipseYRadius}
           stroke="#8D8DAA" 
           strokeLinecap="round"
           strokeDasharray={13}
@@ -71,7 +84,17 @@ export const Ring:NextPage<RingObject> = ({player}) => {
           })
         }
 
+        <defs>
+          <clipPath id="cut-off-bottom">
+            <rect x={ellipseXRadius-planetRadius+offsetX} y={0} width={planetRadius*2} height={planetRadius} />
+          </clipPath>
+        </defs>
+        <circle cx={ellipseXRadius+offsetX} cy={ellipseYRadius+offsetY} r={planetRadius} clipPath="url(#cut-off-bottom)" fill={planetColor}/>
+
+
       </svg>
+
+      
     </div>
   )
 }

@@ -51,7 +51,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     })
     setFlow(flow)
     
-    setAircrafts(aux)
+    setAircrafts(aux.filter((a)=>a!==null))
     loadDrag(aux)
   }
 
@@ -64,24 +64,25 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     updatedAircrafts[aircraftId1].id *= -1
 
     try{
-      handleUpgradeAircraft({...backup[aircraftId1]}, {...backup[aircraftId2]})
+      await handleUpgradeAircraft({...backup[aircraftId1]}, {...backup[aircraftId2]})
       return updatedAircrafts
     } catch(err) {
       console.log('Nope, you cant do that' + err)
-      setAircrafts(backup)
+      setAircrafts(backup.filter((a)=>a!==null))
     }
   }
   
 
   async function checkMatch(start:HTMLElement, end:HTMLElement, draggable:any, aircraftArray:Aircraft[]){    
     if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
+      draggable.destroy()
       aircraftArray = await updateAircraft(parseInt(start.id), parseInt(end.id), [...aircraftArray])
     } else {
       const copy = {...aircraftArray[parseInt(end.id)]}
       aircraftArray[parseInt(end.id)] = {...aircraftArray[parseInt(start.id)]}
       aircraftArray[parseInt(start.id)] = {...copy}
     }
-
+    
     draggable.destroy()
 
     let flow = 0;
@@ -91,7 +92,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     setFlow(flow)
     
     reloadPlayer(player.id)
-    setAircrafts(aircraftArray)
+    setAircrafts(aircraftArray.filter((a)=>a!==null))
     
     loadDrag(aircraftArray)
   }
@@ -125,7 +126,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     setFlow(flow)
 
     reloadPlayer(player.id)
-    setAircrafts(aircraftsArray)     
+    setAircrafts(aircraftsArray.filter((a)=>a!==null))     
     loadDrag(aircraftsArray)
   }
 
