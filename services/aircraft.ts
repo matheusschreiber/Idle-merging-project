@@ -28,7 +28,7 @@ export async function handleEditAircraft(aircraft:Aircraft){
 
 export async function handleDeleteAircraft(id:number){
   try {
-    await api.put('delete/aircraft', {id:id})
+    await api.post('delete/aircraft', {id:id})
   } catch {
     Swal.fire('Something went wrong', 'Error at aircraft deletion, please report this bug on the github comments', 'error')
   }
@@ -36,7 +36,7 @@ export async function handleDeleteAircraft(id:number){
 
 export async function handleListAircraft(player_id:number){
   try {
-    const response = await api.put('list/aircraft', {player_id})
+    const response = await api.post('list/aircraft', {player_id})
     return response.data
   } catch {
     Swal.fire('Something went wrong', 'Error at aircraft list, please report this bug on the github comments', 'error')
@@ -45,7 +45,7 @@ export async function handleListAircraft(player_id:number){
 
 export async function handleGetAircraft(id:Number){
   try {
-    const response = await api.put('get/aircraft', {id:id})
+    const response = await api.post('get/aircraft', {id:id})
     return response.data
   } catch {
     Swal.fire('Something went wrong', 'Error at aircraft search, please report this bug on the github comments', 'error')

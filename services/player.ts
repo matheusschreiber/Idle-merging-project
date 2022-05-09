@@ -42,7 +42,7 @@ export async function handleDeletePlayer(id:number){
       await handleDeleteAircraft(a.id)
     }))
 
-    await api.put('delete/player', {id:id})
+    await api.post('delete/player', {id:id})
   } catch {
     Swal.fire('Something went wrong', 'Error at player deletion, please report this bug on the github comments', 'error')
   }
@@ -66,8 +66,8 @@ type handleGetPlayer = (obj:playerNameOrId) => Promise<Player>
 export const handleGetPlayer:handleGetPlayer = async (obj:playerNameOrId) => {
   try {
     let response;
-    if (obj.id) response = await api.put('get/player', {id:obj.id})
-    else if (obj.name) response = await api.put('get/player', {name:obj.name})
+    if (obj.id) response = await api.post('get/player', {id:obj.id})
+    else if (obj.name) response = await api.post('get/player', {name:obj.name})
 
     return response?.data;
   } catch (err) {
@@ -78,7 +78,7 @@ export const handleGetPlayer:handleGetPlayer = async (obj:playerNameOrId) => {
 
 export const handleLoginPlayer = async (name:string, pass:string) => {
   try {
-    const response = await api.put('get/player', {name:name})
+    const response = await api.post('get/player', {name:name})
     const hash = crypto.createHash('sha256');
     hash.update(pass)  
     if(hash.digest("hex")==response.data.password) return response.data
