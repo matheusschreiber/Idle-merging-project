@@ -20,7 +20,7 @@
   cursor: pointer;
   text-align: right;
   border-radius: 100px;
-  background-color: var(--gray);
+  background-color: white;
   color: var(--dark_gray);
   font-weight: bold;
   transition: .2s;
