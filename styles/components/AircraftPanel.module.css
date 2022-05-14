@@ -42,8 +42,8 @@
 }
 
 .aircraft_item img {
-  margin-top: 5px;
-  width: 70%;
+  margin-bottom: -10px;
+  width: 60%;
 }
 
 .aircraft_item p {
