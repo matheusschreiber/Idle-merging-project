@@ -12,7 +12,7 @@ type ListItem = {
 export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
   
   return(
-    <li id={`${listitem.ListID}`}>
+    <li id={`${listitem.ListID}`} className={listitem.aircraft.id>0?"selectable":""}>
       {
         listitem.aircraft&&listitem.aircraft.id>0?
         <div className={styles.aircraft_item} id={styles.on}>
@@ -25,7 +25,6 @@ export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
           <FiPlus />
           <h2></h2>
         </div>
-
       }
       
     </li> 

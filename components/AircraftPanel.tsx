@@ -144,7 +144,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     }
 
     const draggable = new Draggable(containers, {
-      draggable: 'li',
+      draggable: "li.selectable",
       mirror: {
         constrainDimensions: true,
       },
@@ -176,9 +176,11 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
   },[update])
     
   return(
-    <div className={styles.container}>
+    <div className={styles.container} 
+      onMouseEnter={()=>setShowing(20)}
+      onMouseOut={()=>setShowing(2)}>
       
-      <div className={styles.title} onClick={()=>setShowing(0)}>
+      <div className={styles.title}>
         <h1>FLYING</h1>
       </div>
 

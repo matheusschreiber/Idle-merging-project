@@ -45,7 +45,7 @@ const Home: NextPage = () => {
   }, [name])  
    
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={()=>{if(showing==2) setShowing(0)}}>
       <Head>
         <title>IDLE</title>
         <meta name="description" content="Idle game" />
@@ -63,7 +63,7 @@ const Home: NextPage = () => {
                 item.style.color = 'var(--redish)'
               } else {
                 item.innerHTML = 'STORE'
-                item.style.backgroundColor = 'var(--gray)'
+                item.style.backgroundColor = 'white'
                 item.style.color = 'var(--dark_gray)'
               }
             }}
@@ -76,7 +76,7 @@ const Home: NextPage = () => {
             onMouseOut={()=>{
               let item = document.getElementsByTagName('li')[0]
               item.innerHTML = 'STORE'
-              item.style.backgroundColor = 'var(--gray)'
+              item.style.backgroundColor = 'white'
               item.style.color = 'var(--dark_gray)'}}
             >
               STORE
@@ -98,7 +98,7 @@ const Home: NextPage = () => {
           :"Loading..."
         }
 
-        <div style={player&&showing==2?{}:{visibility:'hidden'}}>
+        <div style={player&&(showing===2||showing===20)?{}:{visibility:'hidden'}}>
           {     
             player  ?
             <AircraftPanel 

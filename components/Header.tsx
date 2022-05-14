@@ -81,8 +81,10 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
 
   return(
     <div className={styles.container}>
-      <h1>${player.wallet?formatValue(player.wallet):'loading...'}</h1>
-      <p>${flow.toFixed(2)} per second</p>
+      {/* <h1>${player.wallet?formatValue(player.wallet):'loading...'}</h1> */}
+      <h1>{player?new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(player.wallet):'loading...'}</h1>
+      <p>{flow?new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(flow):'loading...'} per second</p>
+      {/* <p>${flow.toFixed(2)} per second</p> */}
       <div className={styles.button_container_box}>
         <div 
           className={styles.save_game_container}
