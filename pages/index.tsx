@@ -52,14 +52,14 @@ const Login:NextPage = () =>{
         denyButtonText: `No, take me back!`,
       }).then(async(result) => {
         if (result.isConfirmed) {
-          const player_created = await handleNewPlayer(login, password)
-          if (player_created) {
+          const new_player = await handleNewPlayer(login, password)
+          if (new_player) {
             Swal.fire('New player registered!', '', 'success')
             setName(login)
             localStorage.setItem('IDLE_PLAYER', login)
             Router.push('/Home')
           } else {
-            Swal.fire('Player already registered!', '', 'error')
+            if (!new_player)Swal.fire('Player already registered!', '', 'error')
           }
         }
       })
