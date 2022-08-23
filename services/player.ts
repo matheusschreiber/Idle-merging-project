@@ -21,8 +21,10 @@ export async function handleNewPlayer(name:String, password:String){
       money_per_second: 10,
       bonus_multiplier: 1,
     })
+    return player
   } catch {
     Swal.fire('Something went wrong', 'Error at player creation, please report this bug on the github comments', 'error')
+    return 0
   }
 }
 

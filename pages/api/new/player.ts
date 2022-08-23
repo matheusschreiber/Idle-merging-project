@@ -4,12 +4,17 @@ import connection from '../../../database/connection'
 import crypto from 'crypto'
 
 import { Player } from '../../../types/Player.types'
+import { Error } from "../../../types/Error.types";
 
 import cors from '../cors'
 
-export default async function handler(req: NextApiRequest,res: NextApiResponse<Player>) {
+export default async function handler(req: NextApiRequest,res: NextApiResponse<Player | Error>) {
   await cors(req,res)
   const { name, password } = req.body;
+
+  const playerfound = await connection('players').where('name', name)
+  
+  if (playerfound.length!=0) return res.status(401).json({error:'Name already in use'})
   
   const hash = crypto.createHash('sha256');
   hash.update(password)   
