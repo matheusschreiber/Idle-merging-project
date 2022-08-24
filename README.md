@@ -1,5 +1,5 @@
 
-![badge](https://img.shields.io/static/v1?label=Development%20status&message=provisory&color=yellow) ![badge](https://img.shields.io/static/v1?label=Database%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green)
+![badge](https://img.shields.io/static/v1?label=Development%20status&message=provisory&color=yellow) ![badge](https://img.shields.io/static/v1?label=Database%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Railway%20database%20status&message=Online&color=green)
 
 # Idle Game
 
