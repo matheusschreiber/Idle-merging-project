@@ -1,4 +1,6 @@
 // Update with your config settings.
+const dotenv = require('dotenv')
+dotenv.config({ path: './.env' })
 
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
@@ -14,36 +16,18 @@ module.exports = {
     }
   },
 
-  // staging: {
-  //   client: 'postgresql',
-  //   connection: {
-  //     database: 'my_db',
-  //     user:     'username',
-  //     password: 'password'
-  //   },
-  //   pool: {
-  //     min: 2,
-  //     max: 10
-  //   },
-  //   migrations: {
-  //     tableName: 'knex_migrations'
-  //   }
-  // },
-
-  // production: {
-  //   client: 'postgresql',
-  //   connection: {
-  //     database: 'my_db',
-  //     user:     'username',
-  //     password: 'password'
-  //   },
-  //   pool: {
-  //     min: 2,
-  //     max: 10
-  //   },
-  //   migrations: {
-  //     tableName: 'knex_migrations'
-  //   }
-  // }
+  production: {
+    client: 'postgresql',
+    connection: {
+      host : process.env.NEXT_PUBLIC_PG_HOST,
+      port : process.env.NEXT_PUBLIC_PG_PORT,
+      user : process.env.NEXT_PUBLIC_PG_USER,
+      password : process.env.NEXT_PUBLIC_PG_PASSWORD,
+      database : process.env.NEXT_PUBLIC_PG_DATABASE
+    },
+    migrations: {
+      directory: './database/migrations'
+    }
+  }
 
 };
