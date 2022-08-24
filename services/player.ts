@@ -15,14 +15,14 @@ import {
 export async function handleNewPlayer(name:String, password:String){
   try {
     const player = await api.post('new/player', {name,password})
-    await api.post('new/aircraft', {
+    const aircraft = await api.post('new/aircraft', {
       player_id: player.data.id,
       level: 1,
       money_per_second: 10,
       bonus_multiplier: 1,
     })
     return player
-  } catch {
+  } catch(err) {
     Swal.fire('Something went wrong', 'Error at player creation, please report this bug on the github comments', 'error')
     return 0
   }

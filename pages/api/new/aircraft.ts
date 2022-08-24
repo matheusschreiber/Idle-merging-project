@@ -30,13 +30,21 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<A
     return res.status(403).json({error:'Player has reached maximum amount of aircrafts'})
   }
 
-  const [ id ] = await connection('aircrafts').insert(aircraftTemplate)
+  await connection('aircrafts').insert(aircraftTemplate)
+
+  const player_id_aircrafts = await connection('aircrafts').where('player_id',player_id).select('id')
   
-  player_aircrafts.push(id)
+  player_aircrafts = []
+  let last_id:number = 0
+  player_id_aircrafts.map((a)=>{
+    player_aircrafts.push(a.id)
+    last_id = a.id
+  })
+
   await connection('players').where('id',player_id).update({aircrafts:String(player_aircrafts)})
   
   const aircraft:Aircraft = { 
-    id,
+    id:last_id,
     player_id:aircraftTemplate.player_id,
     level:aircraftTemplate.level,
     money_per_second:aircraftTemplate.money_per_second,

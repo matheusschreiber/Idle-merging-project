@@ -110,6 +110,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
     let aircraftsArray:Aircraft[] = JSON.parse(JSON.stringify([...aircrafts]))
     
+    //TODO: change this request-driven updates and make local updates (just send to db when saving)
     const newAircraft = await handleNewAircraft({
       player_id:player.id,
       level:1,

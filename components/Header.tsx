@@ -57,7 +57,7 @@ export const Header: NextPage<HeaderObject> = ({playerImported, flowImported}) =
     })
   }
 
-  useEffect(()=>setPlayer(playerImported), [playerImported])
+  // useEffect(()=>setPlayer(playerImported), [playerImported])
   
   
   useEffect(()=>{

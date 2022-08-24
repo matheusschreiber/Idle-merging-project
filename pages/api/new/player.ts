@@ -27,16 +27,9 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<P
     password: hash.digest("hex")
   }
 
-  const [ id ] = await connection('players').insert(playerTemplate)
+  await connection('players').insert(playerTemplate);
   
-  const player:Player = {
-    id,
-    rank:playerTemplate.rank,
-    wallet:playerTemplate.wallet,
-    aircrafts:playerTemplate.aircrafts,
-    name:playerTemplate.name,
-    password:playerTemplate.password,
-  }
+  const player_created = await connection('players').where('name',name).select('*');
 
-  res.status(200).json(player)
+  res.status(200).json(player_created[0])
 }
