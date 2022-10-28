@@ -1,5 +1,5 @@
 
-![badge](https://img.shields.io/static/v1?label=Development%20status&message=provisory&color=yellow) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Railway%20database%20status&message=Online&color=green)
+![badge](https://img.shields.io/static/v1?label=Development%20status&message=provisory&color=yellow) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Railway%20database%20status&message=Free%20Plan&color=yellow)
 
 # Idle Game
 
@@ -19,7 +19,7 @@ This is a web browser game with an idle concept. It envolves ships in a 3x3 grid
 
 ## Disclaimers 
 
-- The game only counts money into account when you're with the browser open.
+- The game only refresh the current money when you're on the browser tab.
 - Store with items comming in the future
 - Login is based on names, so be quickly to be the first to get yours
 - No password changes implemented
