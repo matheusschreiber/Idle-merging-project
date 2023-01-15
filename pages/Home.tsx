@@ -14,6 +14,7 @@ import { Ring } from '../components/Ring'
 
 import { handleGetPlayer } from '../services/player'
 import { useContextValue } from '../services/ContextElement'
+
 import Swal from 'sweetalert2'
 import Router from 'next/router'
 

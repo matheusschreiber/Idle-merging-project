@@ -16,6 +16,9 @@ import {
 import { AircraftItem } from "./AircraftItem"
 import { LoadingBar } from "./LoadingBar"
 
+import { Spinner } from "react-activity"
+import "react-activity/dist/library.css";
+
 type ListItem = {
   aircraft:Aircraft,
   ListID: number
@@ -30,8 +33,9 @@ type PanelObject = {
 }
 
 export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setShowing, setFlow, setGlobalTimer}) => {
-  const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([])
-  const [ update, setUpdate ] = useState()
+  const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([]);
+  const [ update, setUpdate ] = useState<boolean>();
+  const [ loading, setLoading ] = useState<boolean>(false);
   const [ draggableState, setDraggableState ] = useState<any>();
   
   async function loadAircrafts(){
@@ -57,6 +61,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
 
   async function updateAircraft(aircraftId1:number, aircraftId2:number, aircraftArray:Aircraft[]){
+    setLoading(true)
     const backup:Aircraft[] = JSON.parse(JSON.stringify([...aircraftArray]))   
     let updatedAircrafts = JSON.parse(JSON.stringify([...aircraftArray]))
     updatedAircrafts[aircraftId2].level++
@@ -65,8 +70,10 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
     try{
       await handleUpgradeAircraft({...backup[aircraftId1]}, {...backup[aircraftId2]})
+      setLoading(false)
       return updatedAircrafts
     } catch(err) {
+      setLoading(false)
       console.log('Nope, you cant do that' + err)
       setAircrafts(backup.filter((a)=>a!==null))
     }
@@ -145,7 +152,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     }
 
     const draggable = new Draggable(containers, {
-      draggable: "li.selectable",
+      draggable: "li",
       mirror: {
         constrainDimensions: true,
       },
@@ -162,9 +169,9 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
       // })
 
     draggable.on("drag:stop", async () => {
-      let start:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
-      let end:HTMLElement = document.getElementsByClassName('draggable--over')[0] as HTMLElement
-
+      let start = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
+      let end = document.getElementsByClassName('draggable--over')[0] as HTMLElement
+      
       if (!start || !end) return
       await checkMatch(start, end, draggable, aircrafts) 
     })
@@ -174,7 +181,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
   useEffect(()=>{
     loadAircrafts()
-  },[update])
+  },[])
     
   return(
     <div className={styles.container} 
@@ -183,6 +190,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
       
       <div className={styles.title}>
         <h1>FLYING</h1>
+        <Spinner animating={loading} />
       </div>
 
       <ul className={styles.content}>

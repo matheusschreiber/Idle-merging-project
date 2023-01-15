@@ -13,11 +13,14 @@
 .container .title{
   background-color: var(--redish);
   border-radius: 100px;
-  padding-left: 20px;
   margin-top: -30px;
   width: 440px;
   font-size: 10pt;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
 }
 
 .content {
@@ -26,6 +29,7 @@
   gap: 20px;
   padding-top: 20px;
   list-style: none;
+  transition: .2s;
 }
 
 .content .aircraft_item {
