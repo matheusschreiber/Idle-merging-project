@@ -78,3 +78,28 @@
   margin-top: -4%;
   font-size: 12pt;
 }
+
+.login_button{
+  height: 2rem;
+  padding: 0 2rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--redish);
+  color: var(--light_white);
+  font-weight: bold;
+  font-size: 15pt;
+  cursor: pointer;
+  transition: .2s;
+  margin-top: 5rem;
+}
+
+.login_button:hover {
+  color: var(--redish);
+  background-color: var(--light_white);
+  transform: translateY(5px);
+}
+
+.loading_icon{
+  color: var(--redish);
+  margin-top: 10px;
+}

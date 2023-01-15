@@ -2,6 +2,9 @@ import { FormEvent, useState } from 'react'
 import { NextPage } from "next"
 import Router from 'next/router'
 
+import { Spinner } from "react-activity";
+import "react-activity/dist/library.css";
+
 import Head from "next/head"
 
 import { 
@@ -19,11 +22,13 @@ const Login:NextPage = () =>{
   const [ login, setLogin ] = useState<string>("")
   const [ password, setPassword ] = useState<string>("")
   const [ newPlayer, setNewPlayer ] = useState<boolean>(false)  
+  const [ loading, setLoading ] = useState<boolean>(false)
 
   const { name, setName } = useContextValue()
 
-  async function handleSubmit(e:FormEvent){
-    e.preventDefault()
+  async function handleSubmit(e:FormEvent|undefined){
+    setLoading(true)
+    if (e) e.preventDefault()
 
     if (!newPlayer) {
       const player = await handleLoginPlayer(login, password)
@@ -41,6 +46,7 @@ const Login:NextPage = () =>{
         })
         localStorage.setItem('IDLE_PLAYER', login)
         setName(login)
+        setLoading(false)
         Router.push('/Home')
       }
     } else {
@@ -62,6 +68,7 @@ const Login:NextPage = () =>{
             if (!new_player)Swal.fire('Player already registered!', '', 'error')
           }
         }
+        setLoading(false)
       })
     }
   }
@@ -81,6 +88,10 @@ const Login:NextPage = () =>{
         <input type="submit" hidden />
       </form>
 
+      <button onClick={(e)=>handleSubmit(e)} className={styles.login_button}>Start</button>
+
+      <Spinner size={20} className={styles.loading_icon} animating={loading}/>
+
       <div
         id={styles.new_player} 
         onClick={()=>setNewPlayer(!newPlayer)} 
@@ -91,6 +102,8 @@ const Login:NextPage = () =>{
       </div>
 
       {/* <button onClick={()=>handleDeletePlayer(19)}>delete player</button> */}
+
+      
     </div>
   )
 }
