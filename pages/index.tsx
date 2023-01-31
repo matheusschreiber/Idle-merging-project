@@ -46,9 +46,10 @@ const Login:NextPage = () =>{
         })
         localStorage.setItem('IDLE_PLAYER', login)
         setName(login)
-        setLoading(false)
         Router.push('/Home')
       }
+
+      setLoading(false)
     } else {
       const result = await Swal.fire({
         title: 'Create new account?',
