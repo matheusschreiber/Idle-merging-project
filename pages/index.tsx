@@ -50,26 +50,23 @@ const Login:NextPage = () =>{
         Router.push('/Home')
       }
     } else {
-      Swal.fire({
+      const result = await Swal.fire({
         title: 'Create new account?',
-        showDenyButton: true,
         showCancelButton: true,
         confirmButtonText: 'Yes, create',
-        denyButtonText: `No, take me back!`,
-      }).then(async(result) => {
-        if (result.isConfirmed) {
-          const new_player = await handleNewPlayer(login, password)
-          if (new_player) {
-            Swal.fire('New player registered!', '', 'success')
-            setName(login)
-            localStorage.setItem('IDLE_PLAYER', login)
-            Router.push('/Home')
-          } else {
-            if (!new_player)Swal.fire('Player already registered!', '', 'error')
-          }
-        }
-        setLoading(false)
       })
+
+      if (result.isConfirmed) {
+        const new_player = await handleNewPlayer(login, password)
+        if (new_player) {
+          Swal.fire('New player registered!', '', 'success')
+          setName(login)
+          localStorage.setItem('IDLE_PLAYER', login)
+          Router.push('/Home')
+        } 
+      }
+
+      setLoading(false)
     }
   }
 

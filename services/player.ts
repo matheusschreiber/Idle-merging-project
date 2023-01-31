@@ -22,8 +22,20 @@ export async function handleNewPlayer(name:String, password:String){
       bonus_multiplier: 1,
     })
     return player
-  } catch(err) {
-    Swal.fire('Something went wrong', 'Error at player creation, please report this bug on the github comments', 'error')
+  } catch (err) {
+    if (((err as any).response.status) == 401) {
+      await Swal.fire(
+        "Player already registered",
+        "Chose another name and try again",
+        "warning"
+      )
+    } else {
+      await Swal.fire(
+        "Something went wrong",
+        "Error at player creation, please report this bug on the github comments",
+        "error"
+      )
+    }
     return 0
   }
 }
