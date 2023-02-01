@@ -27,3 +27,4 @@ This is a web browser game with an idle concept. It envolves ships in a 3x3 grid
 - Ships speeds on the planet miniature are random
 - Rank system to be added
 
+> _database yet to be migrated to 24/7 service_
