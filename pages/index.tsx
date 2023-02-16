@@ -56,11 +56,20 @@ const Login:NextPage = () =>{
 
       if (result.isConfirmed) {
         try {
-          await api.post('player/new', {
+          const response = await api.post('player/new', {
             name, password
           })
+          
+          await api.post('aircraft/new', {
+            player_id:response.data.id,
+            level:1,
+            money_per_second:10,
+            bonus_multiplier:1,
+          })
+
           Swal.fire('New player registered!', '', 'success')
           localStorage.setItem('IDLE_PLAYER', name)
+          await setPlayer(response.data)
           Router.push('/Home')
         } catch(err){
           errorHandler(err)

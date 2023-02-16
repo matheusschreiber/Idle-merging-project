@@ -21,11 +21,13 @@ import Router from 'next/router'
 const Home: NextPage = () => {
   
   //FIXME: describe this variable "showing"
-  const [ showing, setShowing ] = useState<number>(0)  
-  const { player, gameTime, moneyPerSecond, setMoneyPerSecond } = useContextValue()
+  const [ isMouseOverPanel, setMouseOverPanel ] = useState<boolean>(true)  
+  const [ showingPanel, setShowingPanel] = useState<boolean>(false)
+  const { player, gameTime, moneyPerSecond } = useContextValue()
 
   async function loadPlayerData(){    
     if (!player) {
+      //TODO: inser an api call to get local storage data an insert on context
       await Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
       Router.push('/')
       return
@@ -39,7 +41,7 @@ const Home: NextPage = () => {
   useEffect
    
   return (
-    <div className={styles.container} onClick={()=>{if(showing==2) setShowing(0)}}>
+    <div className={styles.container} onClick={()=>{if(!isMouseOverPanel&&showingPanel) setShowingPanel(false)}}>
       <Head>
         <title>IDLE</title>
         <meta name="description" content="Idle game" />
@@ -51,15 +53,9 @@ const Home: NextPage = () => {
           <li
             onClick={()=>{
               let item = document.getElementsByTagName('li')[0]
-              if (!showing) {
-                item.innerHTML = 'SOON'
-                item.style.backgroundColor = 'var(--dark_gray)'
-                item.style.color = 'var(--redish)'
-              } else {
-                item.innerHTML = 'STORE'
-                item.style.backgroundColor = 'white'
-                item.style.color = 'var(--dark_gray)'
-              }
+              item.innerHTML = 'SOON'
+              item.style.backgroundColor = 'var(--dark_gray)'
+              item.style.color = 'var(--redish)'
             }}
             
             onMouseOver={()=>{
@@ -76,7 +72,7 @@ const Home: NextPage = () => {
               STORE
             </li>
 
-          <li onClick={()=>setShowing(2)}>
+          <li onClick={()=>setShowingPanel(true)}>
             FLYING
             <div 
             style={{width:((gameTime%10)*10)+40+"%"}}
@@ -93,20 +89,17 @@ const Home: NextPage = () => {
           :"Loading..."
         }
 
-        {/* <div style={player&&(showing===2||showing===20)?{}:{visibility:'hidden'}}>
+        <div style={player&&showingPanel?{}:{display:'none'}}
+          onMouseOver={()=>setMouseOverPanel(true)}
+          onMouseOut={()=>setMouseOverPanel(false)}>
           {     
             player  ?
-            <AircraftPanel 
-              player={player} 
-              setGlobalTimer={setGlobalTimer}
-              reloadPlayer={reloadPlayer}
-              setShowing={setShowing} 
-              setFlow={setFlow}/> 
+            <AircraftPanel /> 
             : ""
           }
         </div>
 
-        { player  ? <Ring player={player}/> : "" } */}
+        {/* { player  ? <Ring player={player}/> : "" } */}
 
 
       </main>

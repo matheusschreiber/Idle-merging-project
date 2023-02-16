@@ -22,6 +22,9 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
   
   const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
 
-  if (player.password == hashedPassword) return res.status(200).json(player)
-  else return res.status(401).json({error:'Name/password incorrect'})
+  if (player.password == hashedPassword){
+    const aircrafts = await connection('aircrafts').select('*').where('player_id', player.id)
+    player["aircrafts"] = [...aircrafts]
+    return res.status(200).json(player)
+  } else return res.status(401).json({error:'Name/password incorrect'})
 }

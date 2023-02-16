@@ -15,7 +15,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
     await Promise.all(
       players.map(async(player)=>{
         const aircrafts = await connection('aircrafts').select('*').where('player_id', player.id)
-        player["aicrafts"] = [...aircrafts]
+        player["aircrafts"] = [...aircrafts]
       })
     )
     return res.status(200).json(players)
