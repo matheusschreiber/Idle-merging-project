@@ -8,7 +8,6 @@
     table.string('name')
     table.string('password')
     table.integer('rank')
-    table.string('aircrafts')
     table.float('wallet')
   })
 };

@@ -11,9 +11,15 @@ import cors from '../cors'
 export default async function handler(req:NextApiRequest, res:NextApiResponse<PlayerList | Error>){
   await cors(req,res)
   try{
-    const players = await connection('players').select('*')
-    res.status(200).json(players)
+    let players = await connection('players').select('*')
+    await Promise.all(
+      players.map(async(player)=>{
+        const aircrafts = await connection('aircrafts').select('*').where('player_id', player.id)
+        player["aicrafts"] = [...aircrafts]
+      })
+    )
+    return res.status(200).json(players)
   } catch(err){
-    res.status(404).json({error: (err as string)})
+    return res.status(404).json({error: (err as string)})
   }
 }

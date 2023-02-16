@@ -21,7 +21,6 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<P
   const playerTemplate = {
     rank:0,
     wallet:10,
-    aircrafts:'',
     name,
     password: hashedPassword
   }
