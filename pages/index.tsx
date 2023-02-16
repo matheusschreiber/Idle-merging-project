@@ -20,7 +20,7 @@ const Login:NextPage = () =>{
   const [ newPlayer, setNewPlayer ] = useState<boolean>(false)  
   const [ loading, setLoading ] = useState<boolean>(false)
 
-  const { setPlayer, gameTime } = useContextValue()
+  const { setPlayer } = useContextValue()
 
   async function handleSubmit(e:FormEvent|undefined){
     setLoading(true)
@@ -38,8 +38,7 @@ const Login:NextPage = () =>{
           showConfirmButton: false,
           timer: 1500
         })
-        localStorage.setItem('IDLE_PLAYER', name)
-        setPlayer(response.data)
+        await setPlayer(response.data)
         Router.push('/Home')
       } catch(err) {
         errorHandler(err)

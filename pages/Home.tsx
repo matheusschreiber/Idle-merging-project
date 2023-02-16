@@ -19,31 +19,24 @@ import Swal from 'sweetalert2'
 import Router from 'next/router'
 
 const Home: NextPage = () => {
-  const [ player, setPlayer ] = useState<Player>()
-  const [ showing, setShowing ] = useState<number>(0)
-  const [ flow, setFlow ] = useState<number>(0)
   
-  const { name, timer, setGlobalTimer } = useContextValue()
+  //FIXME: describe this variable "showing"
+  const [ showing, setShowing ] = useState<number>(0)  
+  const { player, gameTime, moneyPerSecond, setMoneyPerSecond } = useContextValue()
 
   async function loadPlayerData(){    
-    if (name=='null' && !localStorage.getItem('IDLE_PLAYER')) {
-      Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
+    if (!player) {
+      await Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
       Router.push('/')
       return
     }
-    const s = localStorage.getItem('IDLE_PLAYER');
-    const player:Player = await handleGetPlayer({id: undefined, name:name!=='null'?name:s?s:" "})
-    setPlayer(player)  
   }     
-
-  async function reloadPlayer(id:number){
-    const player:Player = await handleGetPlayer({id, name:undefined})
-    setPlayer(player)
-  }
 
   useEffect(()=>{
     loadPlayerData()
-  }, [name])  
+  }, [])  
+
+  useEffect
    
   return (
     <div className={styles.container} onClick={()=>{if(showing==2) setShowing(0)}}>
@@ -86,20 +79,21 @@ const Home: NextPage = () => {
           <li onClick={()=>setShowing(2)}>
             FLYING
             <div 
-            style={{width:(10-timer)*10+40+"%"}}
+            style={{width:((gameTime%10)*10)+40+"%"}}
             ></div>
           </li>
         </ul>      
       </aside>
 
       <main className={styles.main}>
+        {gameTime} 
         {
           player?
-          <Header playerImported={player} flowImported={flow}/>
+          <Header />
           :"Loading..."
         }
 
-        <div style={player&&(showing===2||showing===20)?{}:{visibility:'hidden'}}>
+        {/* <div style={player&&(showing===2||showing===20)?{}:{visibility:'hidden'}}>
           {     
             player  ?
             <AircraftPanel 
@@ -112,7 +106,7 @@ const Home: NextPage = () => {
           }
         </div>
 
-        { player  ? <Ring player={player}/> : "" }
+        { player  ? <Ring player={player}/> : "" } */}
 
 
       </main>
