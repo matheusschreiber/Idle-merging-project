@@ -6,60 +6,43 @@ import { Player } from "../types/Player.types"
 
 import styles from '../styles/components/AircraftPanel.module.css'
 
-import {
-  handleNewAircraft,
-  handleListAircraft,
-  handleUpgradeAircraft,
-  handleDeleteAircraft
-} from '../services/aircraft'
-
 import { AircraftItem } from "./AircraftItem"
 import { LoadingBar } from "./LoadingBar"
 
 import { Spinner } from "react-activity"
 import "react-activity/dist/library.css";
+import { useContextValue } from "../services/ContextElement"
 
 type ListItem = {
   aircraft:Aircraft,
   ListID: number
 }
 
-type PanelObject = {
-  player: Player,
-  reloadPlayer: Function,
-  setShowing: Function,
-  setFlow: Function,
-  setGlobalTimer: Function
-}
-
-export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setShowing, setFlow, setGlobalTimer}) => {
+export const AircraftPanel:NextPage = () => {
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([]);
   const [ update, setUpdate ] = useState<boolean>();
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ draggableState, setDraggableState ] = useState<any>();
+
+  const { player, gameTime } = useContextValue()
   
   async function loadAircrafts(){
-    let aux:Aircraft[] = await handleListAircraft(player.id)
-
-    const length = aux.length
-
-    if(length<6) for(let i=0;i<6-length;i++) {
-      let fakeAircraft:Aircraft = {...aux[0]}
-      fakeAircraft.id*=-1
-      aux.push(fakeAircraft)
-    }
-
-    let flow = 0;
-    aux.map((a)=>{
-      if (a && a.id>=0) flow+=a.money_per_second
-    })
-    setFlow(flow)
+    if (!player) return;
     
-    setAircrafts(aux.filter((a)=>a!==null))
+    let aux:Aircraft[] = player.aircrafts
+
+    if(aux.length<6) {
+      for(let i=0;i<6-aux.length;i++) {
+        let fakeAircraft:Aircraft = {...aux[0]}
+        fakeAircraft.id*=-1
+        aux.push(fakeAircraft)
+      }
+    }
+    setAircrafts(aux)
     loadDrag(aux)
   }
 
-
+  //FIXME: remove api calls
   async function updateAircraft(aircraftId1:number, aircraftId2:number, aircraftArray:Aircraft[]){
     setLoading(true)
     const backup:Aircraft[] = JSON.parse(JSON.stringify([...aircraftArray]))   
@@ -79,7 +62,6 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     }
   }
   
-
   async function checkMatch(start:HTMLElement, end:HTMLElement, draggable:any, aircraftArray:Aircraft[]){    
     if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
       draggable.destroy()
@@ -98,6 +80,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
     })
     setFlow(flow)
     
+    //FIXME: why this?
     reloadPlayer(player.id)
     setAircrafts(aircraftArray.filter((a)=>a!==null))
     
@@ -117,7 +100,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
     let aircraftsArray:Aircraft[] = JSON.parse(JSON.stringify([...aircrafts]))
     
-    //TODO: change this request-driven updates and make local updates (just send to db when saving)
+    //FIXME: remove api call
     const newAircraft = await handleNewAircraft({
       player_id:player.id,
       level:1,
@@ -139,17 +122,11 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
   }
 
   async function loadDrag(aircrafts:Aircraft[]){
-    const {
-      Draggable,
-    } = await import(/* webpackChunkName: "user-defined" */'@shopify/draggable')
-
+    //Draggable library setup
+    const {Draggable } = await import(/* webpackChunkName: "user-defined" */'@shopify/draggable')
     if (draggableState) draggableState.destroy()
-
     const containers = document.querySelectorAll('ul');
-
-    if (containers.length === 0) {
-      return false;
-    }
+    if (containers.length === 0) return false;
 
     const draggable = new Draggable(containers, {
       draggable: "li",
@@ -160,7 +137,8 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
 
     draggable.on("drag:move", () => {
       let element:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
-      element.style.visibility = 'hidden';   
+      element.style.visibility = 'hidden' 
+      element.style.opacity = '0.001';
     });
 
       // draggable.on("drag:over", ()=>{
@@ -184,9 +162,7 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
   },[])
     
   return(
-    <div className={styles.container} 
-      onMouseEnter={()=>setShowing(20)}
-      onMouseOut={()=>setShowing(2)}>
+    <div className={styles.container}>
       
       <div className={styles.title}>
         <h1>FLYING</h1>
@@ -208,10 +184,10 @@ export const AircraftPanel:NextPage<PanelObject> = ({player, reloadPlayer, setSh
         }
       </ul>
 
-      <LoadingBar 
+      {/* <LoadingBar 
         addAircraft={addAircraft}
         aircrafts={aircrafts}
-        setGlobalTimer={setGlobalTimer} />
+        setGlobalTimer={setGlobalTimer} /> */}
 
     </div>
   )

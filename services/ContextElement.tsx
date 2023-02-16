@@ -7,7 +7,6 @@ type useContextType = {
     player: Player | null
     setPlayer: Function
     moneyPerSecond: number
-    setMoneyPerSecond: Function
     gameTime: number
 }
 
@@ -16,7 +15,6 @@ const contextDefaultValues: useContextType = {
     setPlayer: (p:Player)=>{},
     gameTime:0,
     moneyPerSecond: 0,
-    setMoneyPerSecond: (n:number)=>{}
 }
 
 export const ContextElement = createContext<useContextType>(contextDefaultValues)
@@ -46,9 +44,16 @@ export function ContextProvider({ children }: Props) {
         const gameLoop = setInterval(() => {
             if (playerState) {
                 setGameTime(gameTime+1)
+
+
+                let aux = 0
+                playerState?.aircrafts?.map((aircraft:Aircraft)=>{
+                    aux += aircraft.money_per_second * aircraft.bonus_multiplier
+                })
                 let copyPlayer = {...playerState}
-                copyPlayer.wallet+=1
+                copyPlayer.wallet+=aux
                 setPlayerState(copyPlayer)
+                setMoneyState(aux)
             }
     
             // if (autosave>=autoSaveDelay) {
@@ -65,7 +70,6 @@ export function ContextProvider({ children }: Props) {
         player:playerState,
         setPlayer:setPlayerState,
         moneyPerSecond:moneyState,
-        setMoneyPerSecond:setMoneyState,
         gameTime,
     }
 
