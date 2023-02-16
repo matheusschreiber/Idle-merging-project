@@ -7,36 +7,30 @@ import "react-activity/dist/library.css";
 
 import Head from "next/head"
 
-import { 
-  handleLoginPlayer,
-  handleNewPlayer,
-  handleDeletePlayer
- } from '../services/player'
-
 import { useContextValue } from '../services/ContextElement'
 
 import styles from '../styles/Login.module.css'
 import Swal from 'sweetalert2'
+import api from '../services/api';
+import { errorHandler } from '../services/errorHandler';
 
 const Login:NextPage = () =>{
-  const [ login, setLogin ] = useState<string>("")
+  const [ name, setName ] = useState<string>("")
   const [ password, setPassword ] = useState<string>("")
   const [ newPlayer, setNewPlayer ] = useState<boolean>(false)  
   const [ loading, setLoading ] = useState<boolean>(false)
 
-  const { name, setName } = useContextValue()
+  const { setPlayer, gameTime } = useContextValue()
 
   async function handleSubmit(e:FormEvent|undefined){
     setLoading(true)
     if (e) e.preventDefault()
 
     if (!newPlayer) {
-      const player = await handleLoginPlayer(login, password)
-      if (!player) {
-        await Swal.fire('Wrong Login', 'Please try again', 'error')
-        setPassword("")
-        setLogin("")
-      } else {
+      try {
+        const response = await api.post('player/login', {
+          name, password
+        })
         Swal.fire({
           title: 'Successfully logged in',
           text: 'Redirecting...',
@@ -44,9 +38,13 @@ const Login:NextPage = () =>{
           showConfirmButton: false,
           timer: 1500
         })
-        localStorage.setItem('IDLE_PLAYER', login)
-        setName(login)
+        localStorage.setItem('IDLE_PLAYER', name)
+        setPlayer(response.data)
         Router.push('/Home')
+      } catch(err) {
+        errorHandler(err)
+        // setPassword("")
+        // setLogin("")
       }
 
       setLoading(false)
@@ -54,17 +52,20 @@ const Login:NextPage = () =>{
       const result = await Swal.fire({
         title: 'Create new account?',
         showCancelButton: true,
-        confirmButtonText: 'Yes, create',
+        confirmButtonText: 'Yes',
       })
 
       if (result.isConfirmed) {
-        const new_player = await handleNewPlayer(login, password)
-        if (new_player) {
+        try {
+          await api.post('player/new', {
+            name, password
+          })
           Swal.fire('New player registered!', '', 'success')
-          setName(login)
-          localStorage.setItem('IDLE_PLAYER', login)
+          localStorage.setItem('IDLE_PLAYER', name)
           Router.push('/Home')
-        } 
+        } catch(err){
+          errorHandler(err)
+        }
       }
 
       setLoading(false)
@@ -80,13 +81,13 @@ const Login:NextPage = () =>{
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <form className={styles.form_container} onSubmit={(e)=>handleSubmit(e)}>
-        <input placeholder="LOGIN" type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/>
+        <input placeholder="USERNAME" type="text" value={name} onChange={(e)=>setName(e.target.value)} maxLength={10}/>
         <div id={styles.divider}></div>
-        <input placeholder="PASSWORD" type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+        <input placeholder="PASSWORD" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} maxLength={20}/>
         <input type="submit" hidden />
       </form>
 
-      <button onClick={(e)=>handleSubmit(e)} className={styles.login_button}>Start</button>
+      <button onClick={(e)=>handleSubmit(e)} className={styles.login_button}>Play</button>
 
       <Spinner size={20} className={styles.loading_icon} animating={loading}/>
 
@@ -99,9 +100,6 @@ const Login:NextPage = () =>{
         <div id={styles.new_player_selector} style={newPlayer?{left:'+26%', backgroundColor:'var(--redish)'}:{}}></div>
       </div>
 
-      {/* <button onClick={()=>handleDeletePlayer(19)}>delete player</button> */}
-
-      
     </div>
   )
 }
