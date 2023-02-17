@@ -6,66 +6,62 @@ import { Player } from "../types/Player.types"
 
 import styles from '../styles/components/AircraftPanel.module.css'
 
-import { AircraftItem } from "./AircraftItem"
+import { AircraftItem, ListItem } from "./AircraftItem"
 import { LoadingBar } from "./LoadingBar"
 
 import { Spinner } from "react-activity"
 import "react-activity/dist/library.css";
 import { useContextValue } from "../services/ContextElement"
 
-type ListItem = {
-  aircraft:Aircraft,
-  ListID: number
-}
-
 export const AircraftPanel:NextPage = () => {
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([]);
-  const [ update, setUpdate ] = useState<boolean>();
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ draggableState, setDraggableState ] = useState<any>();
 
-  const { player, gameTime } = useContextValue()
+  const { player, setPlayer, gameTime } = useContextValue()
   
   async function loadAircrafts(){
     if (!player) return;
-    
-    let aux:Aircraft[] = player.aircrafts
+    let aux:Aircraft[] = [...player.aircrafts]
 
-    if(aux.length<6) {
-      for(let i=0;i<6-aux.length;i++) {
+    const initialLength = aux.length
+    if(initialLength<6) {
+      for(let i=0;i<6-initialLength;i++) {
         let fakeAircraft:Aircraft = {...aux[0]}
         fakeAircraft.id*=-1
         aux.push(fakeAircraft)
       }
     }
+
     setAircrafts(aux)
     loadDrag(aux)
   }
 
-  //FIXME: remove api calls
-  async function updateAircraft(aircraftId1:number, aircraftId2:number, aircraftArray:Aircraft[]){
-    setLoading(true)
-    const backup:Aircraft[] = JSON.parse(JSON.stringify([...aircraftArray]))   
-    let updatedAircrafts = JSON.parse(JSON.stringify([...aircraftArray]))
-    updatedAircrafts[aircraftId2].level++
-    updatedAircrafts[aircraftId2].money_per_second += (updatedAircrafts[aircraftId2].level**2)/5
-    updatedAircrafts[aircraftId1].id *= -1
-
-    try{
-      await handleUpgradeAircraft({...backup[aircraftId1]}, {...backup[aircraftId2]})
-      setLoading(false)
-      return updatedAircrafts
-    } catch(err) {
-      setLoading(false)
-      console.log('Nope, you cant do that' + err)
-      setAircrafts(backup.filter((a)=>a!==null))
-    }
-  }
   
   async function checkMatch(start:HTMLElement, end:HTMLElement, draggable:any, aircraftArray:Aircraft[]){    
     if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
       draggable.destroy()
-      aircraftArray = await updateAircraft(parseInt(start.id), parseInt(end.id), [...aircraftArray])
+      // console.log(aircraftArray[parseInt(start.id)])
+      // console.log(aircraftArray[parseInt(end.id)])
+      const aircraftStartID = aircraftArray[parseInt(start.id)].id
+      const aircraftEndID = aircraftArray[parseInt(end.id)].id
+      
+      let auxAircrafts = aircraftArray.filter(aircraft=> 
+        aircraft.id!=aircraftEndID && aircraft.id>=0
+      )
+
+      auxAircrafts.map(aircraft=> {
+        if (aircraft.id==aircraftStartID) {
+          aircraft.level+=1
+          aircraft.money_per_second*=1.2
+        }
+      })
+
+      
+      let auxPlayer = {...player}
+      auxPlayer.aircrafts = auxAircrafts
+      setPlayer(auxPlayer)
+      
     } else {
       const copy = {...aircraftArray[parseInt(end.id)]}
       aircraftArray[parseInt(end.id)] = {...aircraftArray[parseInt(start.id)]}
@@ -73,17 +69,6 @@ export const AircraftPanel:NextPage = () => {
     }
     
     draggable.destroy()
-
-    let flow = 0;
-    aircraftArray.map((a)=>{
-      if (a.id>0) flow+=a.money_per_second
-    })
-    setFlow(flow)
-    
-    //FIXME: why this?
-    reloadPlayer(player.id)
-    setAircrafts(aircraftArray.filter((a)=>a!==null))
-    
     loadDrag(aircraftArray)
   }
 
@@ -123,7 +108,7 @@ export const AircraftPanel:NextPage = () => {
 
   async function loadDrag(aircrafts:Aircraft[]){
     //Draggable library setup
-    const {Draggable } = await import(/* webpackChunkName: "user-defined" */'@shopify/draggable')
+    const { Draggable } = await import(/* webpackChunkName: "user-defined" */'@shopify/draggable')
     if (draggableState) draggableState.destroy()
     const containers = document.querySelectorAll('ul');
     if (containers.length === 0) return false;
@@ -136,21 +121,23 @@ export const AircraftPanel:NextPage = () => {
     });
 
     draggable.on("drag:move", () => {
-      let element:HTMLElement = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
+      let element:HTMLElement = document.getElementsByClassName(draggable.getClassNameFor('mirror'))[0] as HTMLElement      
+      if (element.attributes[0].value=='yes') {
+        element = document.getElementsByClassName(draggable.getClassNameFor('source:dragging'))[0] as HTMLElement
+      } 
+
       element.style.visibility = 'hidden' 
       element.style.opacity = '0.001';
     });
 
-      // draggable.on("drag:over", ()=>{
-      //   let element:HTMLElement = document.getElementsByClassName('draggable--over')[0]
-      //   console.log(element.children[0].children[1].innerHTML)
-      // })
-
     draggable.on("drag:stop", async () => {
-      let start = document.getElementsByClassName('draggable-source--is-dragging')[0] as HTMLElement
-      let end = document.getElementsByClassName('draggable--over')[0] as HTMLElement
+      let element:HTMLElement = document.getElementsByClassName(draggable.getClassNameFor('mirror'))[0] as HTMLElement      
+      if (element.attributes[0].value!='yes') return;
+
+      let start = document.getElementsByClassName(draggable.getClassNameFor('source:dragging'))[0] as HTMLElement
+      let end = document.getElementsByClassName(draggable.getClassNameFor('draggable:over'))[0] as HTMLElement
       
-      if (!start || !end) return
+      if (!start || !end) return;
       await checkMatch(start, end, draggable, aircrafts) 
     })
 
@@ -159,7 +146,7 @@ export const AircraftPanel:NextPage = () => {
 
   useEffect(()=>{
     loadAircrafts()
-  },[])
+  },[player?.aircrafts])
     
   return(
     <div className={styles.container}>
@@ -171,8 +158,7 @@ export const AircraftPanel:NextPage = () => {
 
       <ul className={styles.content}>
         {
-          aircrafts.length?
-          aircrafts.map((aircraft,pos) =>{
+          aircrafts?.map((aircraft,pos) =>{
             let listitem:ListItem = {
               aircraft:aircraft,
               ListID:pos
@@ -180,7 +166,6 @@ export const AircraftPanel:NextPage = () => {
 
             return <AircraftItem key={pos} {...listitem} /> 
           })
-          :""
         }
       </ul>
 

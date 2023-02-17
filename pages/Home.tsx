@@ -17,19 +17,31 @@ import { useContextValue } from '../services/ContextElement'
 
 import Swal from 'sweetalert2'
 import Router from 'next/router'
+import api from '../services/api'
+import { errorHandler } from '../services/errorHandler'
 
 const Home: NextPage = () => {
   
   //FIXME: describe this variable "showing"
   const [ isMouseOverPanel, setMouseOverPanel ] = useState<boolean>(true)  
   const [ showingPanel, setShowingPanel] = useState<boolean>(false)
-  const { player, gameTime, moneyPerSecond } = useContextValue()
+  const { player, setPlayer, gameTime, moneyPerSecond } = useContextValue()
 
   async function loadPlayerData(){    
     if (!player) {
-      //TODO: inser an api call to get local storage data an insert on context
-      await Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
-      Router.push('/')
+      try {
+        const id = localStorage.getItem('IDLE_ID')
+        if (!id) throw Error('No id found')
+
+        const response = await api.get('player/get/'+id)
+        localStorage.setItem('IDLE_ID', response.data.id)
+        setPlayer(response.data)
+      } catch (err) {
+        errorHandler(err)
+        localStorage.removeItem('IDLE_ID')
+        Router.push('/')
+      }
+
       return
     }
   }     

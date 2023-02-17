@@ -39,6 +39,7 @@ const Login:NextPage = () =>{
           timer: 1500
         })
         await setPlayer(response.data)
+        localStorage.setItem('IDLE_ID', response.data.id)
         Router.push('/Home')
       } catch(err) {
         errorHandler(err)
@@ -56,11 +57,13 @@ const Login:NextPage = () =>{
 
       if (result.isConfirmed) {
         try {
-          const response = await api.post('player/new', {
+          let response = await api.post('player/new', {
             name, password
           })
+
+          let playerAux:any = response.data
           
-          await api.post('aircraft/new', {
+          response = await api.post('aircraft/new', {
             player_id:response.data.id,
             level:1,
             money_per_second:10,
@@ -68,8 +71,13 @@ const Login:NextPage = () =>{
           })
 
           Swal.fire('New player registered!', '', 'success')
-          localStorage.setItem('IDLE_PLAYER', name)
-          await setPlayer(response.data)
+          localStorage.setItem('IDLE_ID', playerAux.id)
+          await setPlayer({
+            ...playerAux,
+            aircrafts:[
+              response.data
+            ]
+          })
           Router.push('/Home')
         } catch(err){
           errorHandler(err)
