@@ -29,5 +29,8 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<P
   
   const player_created = await connection('players').where('name',name).select('*');
 
-  res.status(200).json(player_created[0])
+  res.status(200).json({
+    ...player_created[0],
+    aircrafts:[]
+  })
 }
