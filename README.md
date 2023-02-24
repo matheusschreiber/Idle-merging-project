@@ -24,7 +24,6 @@ This is a web browser game with an idle concept. It envolves aircrafts in a 2x3 
 - Login is based on names, so be quickly to be the first to get yours
 - No password changes implemented
 - Provisory sqlite3 database for players and aircrafts
-- Ships speeds on the planet miniature are random
 - Rank system to be added
 
 
