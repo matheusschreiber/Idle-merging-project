@@ -25,22 +25,23 @@ export const Ring:NextPage = () => {
 
   useEffect(()=>{
     fetchAircrafts()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player])
     
   function pickColor(level:number){
     switch (level){
       case 1:
-        return "var(--light_white)"
+        return "var(--aircraft_ring_1)"
       case 2:
-        return "var(--light_gray)"
+        return "var(--aircraft_ring_2)"
       case 3:
-        return "var(--gray)"
+        return "var(--aircraft_ring_3)"
       case 4:
-        return "var(--grayish_white)"
+        return "var(--aircraft_ring_4)"
       case 5:
-        return "var(--dark_white)"
+        return "var(--aircraft_ring_5)"
       case 6:
-        return "var(--redish)"
+        return "var(--aircraft_ring_6)"
       default:
         return ""
     }
@@ -60,8 +61,8 @@ export const Ring:NextPage = () => {
         <ellipse cx={ellipseXRadius+offsetX} cy={ellipseYRadius+offsetY} rx={ellipseXRadius} ry={ellipseYRadius}
           stroke="#8D8DAA" 
           strokeLinecap="round"
-          strokeDasharray={13}
-          strokeWidth="4"
+          strokeDasharray={7}
+          strokeWidth="1"
           fill="rgba(0,0,0,0)"/>
         
         
@@ -74,7 +75,7 @@ export const Ring:NextPage = () => {
               <RingAircraft 
                 key={pos}
                 start={randomStart}
-                velocity={Math.random()*2}
+                velocity={a.level/5}
                 color={pickColor(a.level)}/>
               :""
             )

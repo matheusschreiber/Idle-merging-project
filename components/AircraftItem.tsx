@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import Image from "next/image";
 import { FiPlus } from 'react-icons/fi'
 
 import styles from '../styles/components/AircraftPanel.module.css'
@@ -19,7 +20,10 @@ export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
         
         //if is an aircraft
         <div className={styles.aircraft_item} id={styles.on}>
-          <img src="/aircraft_mini.png" draggable="false" alt="aircraft"/>
+          {/* <img src="/aircraft_mini.png" draggable="false" alt="aircraft"/> */}
+          <div className={styles.aircraft_image_container}>
+            <Image src={`/${listitem.aircraft.level}.png`} draggable="false" alt="aircraft image" width={60} height={60}/>
+          </div>
           <p>{listitem.aircraft.level}</p> 
           {/* the paragraph must be 2nd child (to enable draggable) */}
           <h2>level {listitem.aircraft.level}</h2>

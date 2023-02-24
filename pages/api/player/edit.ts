@@ -11,19 +11,23 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
   await cors(req,res)
   const { id, rank, aircrafts, wallet  } = req.body
   
-  const [found] = await connection('players').where('id',id)
+  const [player] = await connection('players').where('id',id)
   
-  if (!found) {
-    return res.status(404).json({error:'Player not found'})
+  if (!player) {
+    return res.status(404).json({error:'Player not player'})
   }
 
   let aircraftsToBeRegistered:Aircraft[] = []
 
   //updating player's aircrafts, if given
   if (aircrafts) {
-    const registeredAircrafts = await connection("aircrafts")
+    let registeredAircrafts = await connection("aircrafts")
       .where("player_id", id)
       .select("*");
+
+    if (!registeredAircrafts.length) {
+     aircraftsToBeRegistered=[...aircrafts] 
+    }
     
     // updating existing aircrafts
     await Promise.all(
@@ -40,9 +44,14 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
                   money_per_second: aircraftunregistered.money_per_second,
                   bonus_multiplier: aircraftunregistered.bonus_multiplier,
                 });
-            } else if (aircraftunregistered.id>0 && !aircraftsToBeRegistered.includes(aircraftunregistered)) {
+            } else if (
+              //here we check if its a valid aircraft, not registered and not queue to register yet, respectively
+              aircraftunregistered.id > 0 &&
+              aircraftunregistered.id.toString().includes(".") &&
+              !aircraftsToBeRegistered.includes(aircraftunregistered)
+            ) {
               //adding aircraft to be registered if it isn't yet
-              aircraftsToBeRegistered.push(aircraftunregistered)
+              aircraftsToBeRegistered.push(aircraftunregistered);
             }
           })
         );
@@ -52,6 +61,9 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
       })
     );
 
+    registeredAircrafts = await connection("aircrafts")
+      .where("player_id", id)
+      .select("*");
 
     //creating all the new aircrafts
     await Promise.all(
@@ -62,7 +74,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
           });
 
         const aircraftTemplate = {
-          player_id: found.id,
+          player_id: player.id,
           level: aircraftunregistered.level,
           money_per_second: aircraftunregistered.money_per_second,
           bonus_multiplier: aircraftunregistered.bonus_multiplier,
@@ -74,5 +86,5 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
   }
   
   await connection('players').where('id',id).update({rank, wallet})
-  return res.status(200).json({...found, rank, wallet})
+  return res.status(200).json({...player, rank, wallet})
 }
