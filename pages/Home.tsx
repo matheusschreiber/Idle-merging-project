@@ -110,7 +110,11 @@ const Home: NextPage = () => {
           }
         </div>
 
-        {/* { player  ? <Ring player={player}/> : "" } */}
+        {
+          player ?
+          <Ring /> 
+          : ""
+        }
 
 
       </main>

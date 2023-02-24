@@ -1,18 +1,14 @@
+import { useContextValue } from "../services/ContextElement"
+import styles from '../styles/components/Ring.module.css'
+import { Aircraft } from "../types/Aircraft.types"
+import { RingAircraft } from "./RingAircraft"
+import { useEffect, useState } from 'react'
 import { NextPage } from "next"
 
-import styles from '../styles/components/Ring.module.css'
-import { RingAircraft } from "./RingAircraft"
-import { Player } from "../types/Player.types"
-import { useEffect, useState } from 'react'
-import { handleListAircraft } from "../services/aircraft"
-import { Aircraft } from "../types/Aircraft.types"
+export const Ring:NextPage = () => {
 
-type RingObject = {
-  player:Player
-}
+  const { player } = useContextValue()
 
-export const Ring:NextPage<RingObject> = ({player}) => {
-  
   const ellipseXRadius = 300
   const ellipseYRadius = 50
   const offsetX = 10
@@ -24,8 +20,7 @@ export const Ring:NextPage<RingObject> = ({player}) => {
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>()
 
   async function fetchAircrafts() {
-    const array = await handleListAircraft(player.id)
-    setAircrafts(array)
+    if (player?.aircrafts) setAircrafts(player.aircrafts)
   }
 
   useEffect(()=>{
@@ -54,7 +49,7 @@ export const Ring:NextPage<RingObject> = ({player}) => {
   return(
     <div className={styles.container}>
       <svg>
-
+        {/* FIXME: what is this for? */}
         <defs>
           <clipPath id="cut-off-top">
             <rect x={ellipseXRadius-planetRadius+offsetX} y={ellipseYRadius+offsetY} width={planetRadius*2} height={planetRadius} />
@@ -69,6 +64,8 @@ export const Ring:NextPage<RingObject> = ({player}) => {
           strokeWidth="4"
           fill="rgba(0,0,0,0)"/>
         
+        
+        {/* FIXME: this may cause lag */}
         {
           aircrafts?.map((a,pos)=>{
             const randomStart = ellipseXRadius - Math.round(Math.random()*ellipseXRadius)
