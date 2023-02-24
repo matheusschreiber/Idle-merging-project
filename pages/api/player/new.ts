@@ -16,20 +16,21 @@ export default async function handler(req: NextApiRequest,res: NextApiResponse<P
   
   if (playerfound.length!=0) return res.status(401).json({error:'Name already in use'})
   
-  const hash = crypto.createHash('sha256');
-  hash.update(password)   
+  const hashedPassword = crypto.createHash('sha256').update(password).digest("hex") 
   
   const playerTemplate = {
     rank:0,
     wallet:10,
-    aircrafts:'',
     name,
-    password: hash.digest("hex")
+    password: hashedPassword
   }
 
   await connection('players').insert(playerTemplate);
   
   const player_created = await connection('players').where('name',name).select('*');
 
-  res.status(200).json(player_created[0])
+  res.status(200).json({
+    ...player_created[0],
+    aircrafts:[]
+  })
 }

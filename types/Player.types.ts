@@ -1,8 +1,10 @@
+import { Aircraft } from "./Aircraft.types"
+
 export type Player = {
   id: number,
   name: string,
   password: string,
   rank: number,
-  aircrafts: string,
+  aircrafts: Aircraft[],
   wallet: number
 }

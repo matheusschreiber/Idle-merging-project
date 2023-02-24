@@ -1,18 +1,14 @@
+import { useContextValue } from "../services/ContextElement"
+import styles from '../styles/components/Ring.module.css'
+import { Aircraft } from "../types/Aircraft.types"
+import { RingAircraft } from "./RingAircraft"
+import { useEffect, useState } from 'react'
 import { NextPage } from "next"
 
-import styles from '../styles/components/Ring.module.css'
-import { RingAircraft } from "./RingAircraft"
-import { Player } from "../types/Player.types"
-import { useEffect, useState } from 'react'
-import { handleListAircraft } from "../services/aircraft"
-import { Aircraft } from "../types/Aircraft.types"
+export const Ring:NextPage = () => {
 
-type RingObject = {
-  player:Player
-}
+  const { player } = useContextValue()
 
-export const Ring:NextPage<RingObject> = ({player}) => {
-  
   const ellipseXRadius = 300
   const ellipseYRadius = 50
   const offsetX = 10
@@ -24,28 +20,28 @@ export const Ring:NextPage<RingObject> = ({player}) => {
   const [ aircrafts, setAircrafts ] = useState<Aircraft[]>()
 
   async function fetchAircrafts() {
-    const array = await handleListAircraft(player.id)
-    setAircrafts(array)
+    if (player?.aircrafts) setAircrafts(player.aircrafts)
   }
 
   useEffect(()=>{
     fetchAircrafts()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player])
     
   function pickColor(level:number){
     switch (level){
       case 1:
-        return "var(--light_white)"
+        return "var(--aircraft_ring_1)"
       case 2:
-        return "var(--light_gray)"
+        return "var(--aircraft_ring_2)"
       case 3:
-        return "var(--gray)"
+        return "var(--aircraft_ring_3)"
       case 4:
-        return "var(--grayish_white)"
+        return "var(--aircraft_ring_4)"
       case 5:
-        return "var(--dark_white)"
+        return "var(--aircraft_ring_5)"
       case 6:
-        return "var(--redish)"
+        return "var(--aircraft_ring_6)"
       default:
         return ""
     }
@@ -54,7 +50,7 @@ export const Ring:NextPage<RingObject> = ({player}) => {
   return(
     <div className={styles.container}>
       <svg>
-
+        {/* FIXME: what is this for? */}
         <defs>
           <clipPath id="cut-off-top">
             <rect x={ellipseXRadius-planetRadius+offsetX} y={ellipseYRadius+offsetY} width={planetRadius*2} height={planetRadius} />
@@ -65,10 +61,12 @@ export const Ring:NextPage<RingObject> = ({player}) => {
         <ellipse cx={ellipseXRadius+offsetX} cy={ellipseYRadius+offsetY} rx={ellipseXRadius} ry={ellipseYRadius}
           stroke="#8D8DAA" 
           strokeLinecap="round"
-          strokeDasharray={13}
-          strokeWidth="4"
+          strokeDasharray={7}
+          strokeWidth="1"
           fill="rgba(0,0,0,0)"/>
         
+        
+        {/* FIXME: this may cause lag */}
         {
           aircrafts?.map((a,pos)=>{
             const randomStart = ellipseXRadius - Math.round(Math.random()*ellipseXRadius)
@@ -77,7 +75,7 @@ export const Ring:NextPage<RingObject> = ({player}) => {
               <RingAircraft 
                 key={pos}
                 start={randomStart}
-                velocity={Math.random()*2}
+                velocity={a.level/5}
                 color={pickColor(a.level)}/>
               :""
             )

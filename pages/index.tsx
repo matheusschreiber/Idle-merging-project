@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { NextPage } from "next"
 import Router from 'next/router'
 
@@ -7,36 +7,30 @@ import "react-activity/dist/library.css";
 
 import Head from "next/head"
 
-import { 
-  handleLoginPlayer,
-  handleNewPlayer,
-  handleDeletePlayer
- } from '../services/player'
-
-import { useContextValue } from '../services/ContextElement'
+import { addEmptySpaces, useContextValue } from '../services/ContextElement'
 
 import styles from '../styles/Login.module.css'
 import Swal from 'sweetalert2'
+import api from '../services/api';
+import { errorHandler } from '../services/errorHandler';
 
 const Login:NextPage = () =>{
-  const [ login, setLogin ] = useState<string>("")
+  const [ name, setName ] = useState<string>("")
   const [ password, setPassword ] = useState<string>("")
-  const [ newPlayer, setNewPlayer ] = useState<boolean>(false)  
+  const [ buttonStatus, setButtonStatus ] = useState<"newplayer"|"offline"|"existing">("existing")  
   const [ loading, setLoading ] = useState<boolean>(false)
 
-  const { name, setName } = useContextValue()
+  const { setPlayer, maxAircrafts } = useContextValue()
 
   async function handleSubmit(e:FormEvent|undefined){
     setLoading(true)
     if (e) e.preventDefault()
 
-    if (!newPlayer) {
-      const player = await handleLoginPlayer(login, password)
-      if (!player) {
-        await Swal.fire('Wrong Login', 'Please try again', 'error')
-        setPassword("")
-        setLogin("")
-      } else {
+    if (buttonStatus=="existing") {
+      try {
+        const response = await api.post('player/login', {
+          name, password
+        })
         Swal.fire({
           title: 'Successfully logged in',
           text: 'Redirecting...',
@@ -44,32 +38,73 @@ const Login:NextPage = () =>{
           showConfirmButton: false,
           timer: 1500
         })
-        localStorage.setItem('IDLE_PLAYER', login)
-        setName(login)
+        await setPlayer(addEmptySpaces(response.data, maxAircrafts))
+        localStorage.setItem('IDLE_ID', response.data.id)
         Router.push('/Home')
+      } catch(err) {
+        errorHandler(err)
+        // setPassword("")
+        // setLogin("")
+      }
+
+      setLoading(false)
+    } else if (buttonStatus=="newplayer") {
+      const result = await Swal.fire({
+        title: 'Create new account?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+      })
+
+      if (result.isConfirmed) {
+        try {
+          let response = await api.post('player/new', {
+            name, password
+          })
+
+          let playerAux:any = response.data
+          
+          response = await api.post('aircraft/new', {
+            player_id:response.data.id,
+            level:1,
+            money_per_second:10,
+            bonus_multiplier:1,
+          })
+
+          Swal.fire('New player registered!', '', 'success')
+          localStorage.setItem('IDLE_ID', playerAux.id)
+          await setPlayer(addEmptySpaces(
+            {
+              ...playerAux,
+              aircrafts:[
+                response.data
+              ]
+            }, maxAircrafts
+          ))
+          Router.push('/Home')
+        } catch(err){
+          errorHandler(err)
+        }
       }
 
       setLoading(false)
     } else {
-      const result = await Swal.fire({
-        title: 'Create new account?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, create',
-      })
-
-      if (result.isConfirmed) {
-        const new_player = await handleNewPlayer(login, password)
-        if (new_player) {
-          Swal.fire('New player registered!', '', 'success')
-          setName(login)
-          localStorage.setItem('IDLE_PLAYER', login)
-          Router.push('/Home')
-        } 
-      }
-
       setLoading(false)
     }
   }
+
+  async function fetchConnection() {
+    try {
+      const response = await api.get('connection')
+      if (response.data) return; 
+    } catch (err) {}
+
+    Swal.fire("Ops","Servers are offline at the moment, please come back later", "warning")
+    setButtonStatus("offline")
+  }
+
+  useEffect(()=>{
+    fetchConnection()
+  },[])
 
 
   return (
@@ -80,28 +115,39 @@ const Login:NextPage = () =>{
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <form className={styles.form_container} onSubmit={(e)=>handleSubmit(e)}>
-        <input placeholder="LOGIN" type="text" value={login} onChange={(e)=>setLogin(e.target.value)}/>
+        <input placeholder="USERNAME" type="text" value={name} onChange={(e)=>setName(e.target.value)} maxLength={10}/>
         <div id={styles.divider}></div>
-        <input placeholder="PASSWORD" type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+        <input placeholder="PASSWORD" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} maxLength={20}/>
         <input type="submit" hidden />
       </form>
 
-      <button onClick={(e)=>handleSubmit(e)} className={styles.login_button}>Start</button>
+      <button 
+        onClick={(e)=>handleSubmit(e)}
+        className={styles.login_button}
+        id={buttonStatus!="offline"?styles.login_button_enabled:styles.login_button_disabled}
+        disabled={buttonStatus=="offline"}>
+          
+      </button>
 
       <Spinner size={20} className={styles.loading_icon} animating={loading}/>
 
       <div
         id={styles.new_player} 
-        onClick={()=>setNewPlayer(!newPlayer)} 
-        style={newPlayer?{backgroundColor:'var(--light_redish)', color:'var(--light_redish'}:{}}>
+        onClick={()=>setButtonStatus(
+          buttonStatus!="offline"?buttonStatus=="newplayer"?"existing":"newplayer":"offline"
+        )} 
+        style={
+          buttonStatus!="offline"?
+            buttonStatus=="newplayer"?
+            {backgroundColor:'var(--light_redish)', color:'var(--light_redish'}
+            :{}
+          :{backgroundColor: 'gray', cursor:'not-allowed', color:'gray'}
+        }>
 
         <h1>new player</h1>
-        <div id={styles.new_player_selector} style={newPlayer?{left:'+26%', backgroundColor:'var(--redish)'}:{}}></div>
+        <div id={styles.new_player_selector} style={buttonStatus=="newplayer"?{left:'+26%', backgroundColor:'var(--redish)'}:{}}></div>
       </div>
 
-      {/* <button onClick={()=>handleDeletePlayer(19)}>delete player</button> */}
-
-      
     </div>
   )
 }

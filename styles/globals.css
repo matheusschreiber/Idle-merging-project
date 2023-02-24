@@ -5,6 +5,9 @@ body {
   font-family: Kanit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: white;
+  background-image: url("../public/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 a {
@@ -29,4 +32,11 @@ a {
   --dark_white:#DFDFDE;
   --redish:#F56D91;
   --light_redish: #FFC1D2;
+
+  --aircraft_ring_6: #ff1654;
+  --aircraft_ring_5: #fd6b92;
+  --aircraft_ring_4: #ffa0b9;
+  --aircraft_ring_3: #ffbcce;
+  --aircraft_ring_2: #fceaef;
+  --aircraft_ring_1: #ffffff;
 }

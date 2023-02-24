@@ -5,11 +5,11 @@
 
 ## Description
 
-This is a web browser game with an idle concept. It envolves ships in a 3x3 grid where you merge two of the same type together to get an third better one. 
+This is a web browser game with an idle concept. It envolves ships in a 2x3 grid where you merge two of the same type together to get a third better one. 
 
 [Click here to play on browser](https://idlegame.vercel.app/)
 
->At the moment there's a phisical limit of 9 ships for obvious reasons, but on the future will be implemented a system to overcome that
+>At the moment there's a phisical limit of 6 ships for obvious reasons, but on the future will be implemented a system to overcome that
 
 ## Game pictures
 

@@ -1,52 +1,51 @@
+import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
 
 import styles from '../styles/Home.module.css'
-import { FiArrowLeft } from 'react-icons/fi'
-
-import { Aircraft } from '../types/Aircraft.types'
-import { Player } from '../types/Player.types'
 
 import { AircraftPanel } from '../components/AircraftPanel'
 import { Header } from '../components/Header'
 import { Ring } from '../components/Ring'
 
-import { handleGetPlayer } from '../services/player'
-import { useContextValue } from '../services/ContextElement'
+import { addEmptySpaces, useContextValue } from '../services/ContextElement'
 
-import Swal from 'sweetalert2'
 import Router from 'next/router'
+import api from '../services/api'
+import { errorHandler } from '../services/errorHandler'
 
 const Home: NextPage = () => {
-  const [ player, setPlayer ] = useState<Player>()
-  const [ showing, setShowing ] = useState<number>(0)
-  const [ flow, setFlow ] = useState<number>(0)
   
-  const { name, timer, setGlobalTimer } = useContextValue()
+  const [ isMouseOverPanel, setMouseOverPanel ] = useState<boolean>(true)  
+  const [ showingPanel, setShowingPanel] = useState<boolean>(false)
+  const { player, setPlayer, gameTime, maxAircrafts } = useContextValue()
 
   async function loadPlayerData(){    
-    if (name=='null' && !localStorage.getItem('IDLE_PLAYER')) {
-      Swal.fire('Player not found', 'Redirecting to login screen...', 'warning')
-      Router.push('/')
-      return
-    }
-    const s = localStorage.getItem('IDLE_PLAYER');
-    const player:Player = await handleGetPlayer({id: undefined, name:name!=='null'?name:s?s:" "})
-    setPlayer(player)  
-  }     
+    if (!player) {
+      try {
+        const id = localStorage.getItem('IDLE_ID')
+        if (!id) throw Error('No id found')
 
-  async function reloadPlayer(id:number){
-    const player:Player = await handleGetPlayer({id, name:undefined})
-    setPlayer(player)
-  }
+        const response = await api.get('player/get/'+id)
+        localStorage.setItem('IDLE_ID', response.data.id)
+        
+        await setPlayer(addEmptySpaces(response.data, maxAircrafts))
+
+      } catch (err) {
+        errorHandler(err)
+        localStorage.removeItem('IDLE_ID')
+        Router.push('/')
+      }
+    }
+  }     
 
   useEffect(()=>{
     loadPlayerData()
-  }, [name])  
-   
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])  
+
   return (
-    <div className={styles.container} onClick={()=>{if(showing==2) setShowing(0)}}>
+    <div className={styles.container} onClick={()=>{if(!isMouseOverPanel&&showingPanel) setShowingPanel(false)}}>
       <Head>
         <title>IDLE</title>
         <meta name="description" content="Idle game" />
@@ -58,15 +57,9 @@ const Home: NextPage = () => {
           <li
             onClick={()=>{
               let item = document.getElementsByTagName('li')[0]
-              if (!showing) {
-                item.innerHTML = 'SOON'
-                item.style.backgroundColor = 'var(--dark_gray)'
-                item.style.color = 'var(--redish)'
-              } else {
-                item.innerHTML = 'STORE'
-                item.style.backgroundColor = 'white'
-                item.style.color = 'var(--dark_gray)'
-              }
+              item.innerHTML = 'SOON'
+              item.style.backgroundColor = 'var(--dark_gray)'
+              item.style.color = 'var(--redish)'
             }}
             
             onMouseOver={()=>{
@@ -83,10 +76,10 @@ const Home: NextPage = () => {
               STORE
             </li>
 
-          <li onClick={()=>setShowing(2)}>
+          <li onClick={()=>setShowingPanel(true)}>
             FLYING
             <div 
-            style={{width:(10-timer)*10+40+"%"}}
+            style={{width:(gameTime*10)+40+"%"}}
             ></div>
           </li>
         </ul>      
@@ -95,24 +88,25 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         {
           player?
-          <Header playerImported={player} flowImported={flow}/>
+          <Header />
           :"Loading..."
         }
 
-        <div style={player&&(showing===2||showing===20)?{}:{visibility:'hidden'}}>
+        <div style={player&&showingPanel?{}:{display:'none'}}
+          onMouseOver={()=>setMouseOverPanel(true)}
+          onMouseOut={()=>setMouseOverPanel(false)}>
           {     
             player  ?
-            <AircraftPanel 
-              player={player} 
-              setGlobalTimer={setGlobalTimer}
-              reloadPlayer={reloadPlayer}
-              setShowing={setShowing} 
-              setFlow={setFlow}/> 
+            <AircraftPanel /> 
             : ""
           }
         </div>
 
-        { player  ? <Ring player={player}/> : "" }
+        {
+          player ?
+          <Ring /> 
+          : ""
+        }
 
 
       </main>
