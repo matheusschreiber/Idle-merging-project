@@ -17,18 +17,20 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
     return res.status(404).json({error:'Player not found'})
   }
 
+  let aircraftsToBeRegistered:Aircraft[] = []
+
   //updating player's aircrafts, if given
   if (aircrafts) {
     const registeredAircrafts = await connection("aircrafts")
       .where("player_id", id)
       .select("*");
+    
+    // updating existing aircrafts
     await Promise.all(
       registeredAircrafts.map(async (aircraftregistered) => {
         let discarted = true
-        
         await Promise.all(
           aircrafts.map(async (aircraftunregistered: Aircraft) => {
-            // if aircraft exists, then just update it
             if (aircraftregistered.id == aircraftunregistered.id) {
               discarted=false
               await connection("aircrafts")
@@ -38,30 +40,35 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse<Pl
                   money_per_second: aircraftunregistered.money_per_second,
                   bonus_multiplier: aircraftunregistered.bonus_multiplier,
                 });
-
-            // if it doesn't, then create one with the given specs
-            } else {
-              if (found.aircrafts.length > 6)
-                return res
-                  .status(403)
-                  .json({
-                    error: "Player has reached maximum amount of aircrafts",
-                  });
-
-              const aircraftTemplate = {
-                player_id: found.id,
-                level: aircraftunregistered.level,
-                money_per_second: aircraftunregistered.money_per_second,
-                bonus_multiplier: aircraftunregistered.bonus_multiplier,
-              };
-
-              await connection("aircrafts").insert(aircraftTemplate);
+            } else if (aircraftunregistered.id>0 && !aircraftsToBeRegistered.includes(aircraftunregistered)) {
+              //adding aircraft to be registered if it isn't yet
+              aircraftsToBeRegistered.push(aircraftunregistered)
             }
           })
         );
 
         // if registered aircraft is no longer alive (suffered merging)
         if (discarted) await connection("aircrafts").where('id', aircraftregistered.id).del()
+      })
+    );
+
+
+    //creating all the new aircrafts
+    await Promise.all(
+      aircraftsToBeRegistered.map(async(aircraftunregistered: Aircraft) => {
+        if (registeredAircrafts.length > 6)
+          return res.status(403).json({
+            error: "Player has reached maximum amount of aircrafts",
+          });
+
+        const aircraftTemplate = {
+          player_id: found.id,
+          level: aircraftunregistered.level,
+          money_per_second: aircraftunregistered.money_per_second,
+          bonus_multiplier: aircraftunregistered.bonus_multiplier,
+        };
+
+        await connection("aircrafts").insert(aircraftTemplate);
       })
     );
   }
