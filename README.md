@@ -31,4 +31,4 @@ This is a web browser game with an idle concept. It envolves aircrafts in a 2x3 
 
 ## Older versions
 
-![v1.0](./v1.0.md)
+[v1.0](./v1.0.md)
