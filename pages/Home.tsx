@@ -87,14 +87,13 @@ const Home: NextPage = () => {
           <li onClick={()=>setShowingPanel(true)}>
             FLYING
             <div 
-            style={{width:((gameTime%10)*10)+40+"%"}}
+            style={{width:(gameTime*10)+40+"%"}}
             ></div>
           </li>
         </ul>      
       </aside>
 
       <main className={styles.main}>
-        {gameTime} 
         {
           player?
           <Header />

@@ -18,15 +18,15 @@ export const AircraftPanel:NextPage = () => {
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ draggableState, setDraggableState ] = useState<any>();
 
-  const { player, setPlayer, gameTime } = useContextValue()
+  const { player, setPlayer, gameTime, maxAircrafts } = useContextValue()
   
   async function loadAircrafts(){
     if (!player) return;
     let aux:Aircraft[] = [...player.aircrafts]
 
     const initialLength = aux.length
-    if(initialLength<6) {
-      for(let i=0;i<6-initialLength;i++) {
+    if(initialLength<maxAircrafts) {
+      for(let i=0;i<maxAircrafts-initialLength;i++) {
         let fakeAircraft:Aircraft = {...aux[0]}
         fakeAircraft.id*=-1
         aux.push(fakeAircraft)
@@ -72,39 +72,7 @@ export const AircraftPanel:NextPage = () => {
     loadDrag(aircraftArray)
   }
 
-  const addAircraft = async (aircraftImportedArray:Aircraft[]) => {
-    let idToBeReplaced:number=0;
-    aircraftImportedArray.map((a,pos)=>{
-      if (a.id<0) {
-        idToBeReplaced=pos
-        return
-      } 
-    })
-
-    if (!idToBeReplaced) return
-
-    let aircraftsArray:Aircraft[] = JSON.parse(JSON.stringify([...aircrafts]))
-    
-    //FIXME: remove api call
-    const newAircraft = await handleNewAircraft({
-      player_id:player.id,
-      level:1,
-      money_per_second:10,
-      bonus_multiplier:1
-    })
-    
-    aircraftsArray[idToBeReplaced] = newAircraft
-
-    let flow = 0;
-    aircraftsArray.map((a)=>{
-      if (a && a.id>=0) flow+=a.money_per_second
-    })
-    setFlow(flow)
-
-    reloadPlayer(player.id)
-    setAircrafts(aircraftsArray.filter((a)=>a!==null))     
-    loadDrag(aircraftsArray)
-  }
+  
 
   async function loadDrag(aircrafts:Aircraft[]){
     //Draggable library setup
@@ -169,10 +137,7 @@ export const AircraftPanel:NextPage = () => {
         }
       </ul>
 
-      {/* <LoadingBar 
-        addAircraft={addAircraft}
-        aircrafts={aircrafts}
-        setGlobalTimer={setGlobalTimer} /> */}
+      <LoadingBar />
 
     </div>
   )
