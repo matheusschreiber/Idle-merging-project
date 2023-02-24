@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { NextPage } from "next"
 import Router from 'next/router'
 
@@ -17,7 +17,7 @@ import { errorHandler } from '../services/errorHandler';
 const Login:NextPage = () =>{
   const [ name, setName ] = useState<string>("")
   const [ password, setPassword ] = useState<string>("")
-  const [ newPlayer, setNewPlayer ] = useState<boolean>(false)  
+  const [ buttonStatus, setButtonStatus ] = useState<"newplayer"|"offline"|"existing">("existing")  
   const [ loading, setLoading ] = useState<boolean>(false)
 
   const { setPlayer } = useContextValue()
@@ -26,7 +26,7 @@ const Login:NextPage = () =>{
     setLoading(true)
     if (e) e.preventDefault()
 
-    if (!newPlayer) {
+    if (buttonStatus=="existing") {
       try {
         const response = await api.post('player/login', {
           name, password
@@ -48,7 +48,7 @@ const Login:NextPage = () =>{
       }
 
       setLoading(false)
-    } else {
+    } else if (buttonStatus=="newplayer") {
       const result = await Swal.fire({
         title: 'Create new account?',
         showCancelButton: true,
@@ -85,8 +85,24 @@ const Login:NextPage = () =>{
       }
 
       setLoading(false)
+    } else {
+      setLoading(false)
     }
   }
+
+  async function fetchConnection() {
+    try {
+      const response = await api.get('connection')
+      if (response.data) return; 
+    } catch (err) {}
+
+    Swal.fire("Ops","Servers are offline at the moment, please come back later", "warning")
+    setButtonStatus("offline")
+  }
+
+  useEffect(()=>{
+    fetchConnection()
+  },[])
 
 
   return (
@@ -103,17 +119,31 @@ const Login:NextPage = () =>{
         <input type="submit" hidden />
       </form>
 
-      <button onClick={(e)=>handleSubmit(e)} className={styles.login_button}>Play</button>
+      <button 
+        onClick={(e)=>handleSubmit(e)}
+        className={styles.login_button}
+        id={buttonStatus!="offline"?styles.login_button_enabled:styles.login_button_disabled}
+        disabled={buttonStatus=="offline"}>
+          
+      </button>
 
       <Spinner size={20} className={styles.loading_icon} animating={loading}/>
 
       <div
         id={styles.new_player} 
-        onClick={()=>setNewPlayer(!newPlayer)} 
-        style={newPlayer?{backgroundColor:'var(--light_redish)', color:'var(--light_redish'}:{}}>
+        onClick={()=>setButtonStatus(
+          buttonStatus!="offline"?buttonStatus=="newplayer"?"existing":"newplayer":"offline"
+        )} 
+        style={
+          buttonStatus!="offline"?
+            buttonStatus=="newplayer"?
+            {backgroundColor:'var(--light_redish)', color:'var(--light_redish'}
+            :{}
+          :{backgroundColor: 'gray', cursor:'not-allowed', color:'gray'}
+        }>
 
         <h1>new player</h1>
-        <div id={styles.new_player_selector} style={newPlayer?{left:'+26%', backgroundColor:'var(--redish)'}:{}}></div>
+        <div id={styles.new_player_selector} style={buttonStatus=="newplayer"?{left:'+26%', backgroundColor:'var(--redish)'}:{}}></div>
       </div>
 
     </div>

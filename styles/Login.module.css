@@ -94,10 +94,23 @@
   margin-top: 5rem;
 }
 
-.login_button:hover {
+#login_button_enabled:hover {
   color: var(--redish);
   background-color: var(--light_white);
   transform: translateY(5px);
+}
+
+#login_button_disabled:hover {
+  color: gray;
+  background-color: rgb(81, 81, 81);
+}
+
+.login_button::after {
+  content: "Play" !important;
+}
+
+#login_button_disabled:hover::after {
+  content: "Database offline :(" !important;
 }
 
 .loading_icon{
