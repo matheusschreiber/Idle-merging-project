@@ -37,18 +37,20 @@ export function ContextProvider({ children }: Props) {
     const [ moneyState, setMoneyState ] = useState<number>(0)
     const { maxAircrafts } = useContextValue()
 
-    const addAircraft = async () => {
+    const addAircraft = () => {
         if (!playerState) return;
         
         let idToBeReplaced:number=0;
-        playerState.aircrafts.map((a,pos)=>{
-            idToBeReplaced=pos+1
-        })
-        
-        //TODO: fixed amount of max aircrafts
-        if (idToBeReplaced>=5) return;
 
-        if (!idToBeReplaced) return;
+        for(let i=0;i<playerState.aircrafts.length;i++){
+            if (playerState.aircrafts[i].id<0) {
+                idToBeReplaced=i
+                break
+            }
+        }
+        
+        if (idToBeReplaced>=maxAircrafts) return;
+
         const newAircraftData = {
             player_id:playerState.id,
             level:1,
@@ -56,17 +58,14 @@ export function ContextProvider({ children }: Props) {
             bonus_multiplier:1
         }
 
-        try {
-            const response = await api.post('aircraft/new', newAircraftData)
-            let playerCopy = {...playerState}
-            playerCopy.aircrafts = [
-            ...playerCopy.aircrafts,
-            response.data
-            ]
-            setPlayerState(playerCopy)
-        } catch(err) {
-            errorHandler(err)
+        let playerCopy = {...playerState}
+        playerCopy.aircrafts[idToBeReplaced] = {
+            id: new Date().getTime()+0.5, //this id is float, to indicate to backend that this aircraft is not registered yet
+            ...newAircraftData
         }
+        
+				//FIXME: i think this is broken
+				// setPlayerState(playerCopy)
     }
 
     const saveGame = async () => {
@@ -80,15 +79,6 @@ export function ContextProvider({ children }: Props) {
     }
 
     useEffect(()=>{
-        // let aux = 0
-        // playerState?.aircrafts.map((aircraft:Aircraft)=>{
-        //     aux += aircraft.money_per_second
-        // })
-        // setMoneyState(aux)
-    }, [playerState?.aircrafts])
-    
-
-    useEffect(()=>{
         const gameLoop = setInterval(() => {
             if (playerState) {
                 if (gameTime<10) setGameTime(gameTime+1)
@@ -96,7 +86,7 @@ export function ContextProvider({ children }: Props) {
 
                 let aux = 0
                 playerState?.aircrafts?.map((aircraft:Aircraft)=>{
-                    aux += aircraft.money_per_second * aircraft.bonus_multiplier
+                    if (aircraft.id>0) aux += aircraft.money_per_second * aircraft.bonus_multiplier
                 })
 
                 let copyPlayer = {...playerState}
@@ -106,7 +96,7 @@ export function ContextProvider({ children }: Props) {
                 
                 if ((gameTime%10)*10 == 0) {
                     // saveGame()
-                    // addAircraft()
+                    addAircraft()
                 }
             }           
         }, 1000);

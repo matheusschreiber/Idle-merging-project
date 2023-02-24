@@ -1,18 +1,8 @@
 import type { NextPage } from 'next'
-import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
-
 import styles from '../styles/components/Header.module.css'
-
 import { FiArrowLeftCircle  } from 'react-icons/fi'
-
-import { Player } from '../types/Player.types'
-import { Aircraft } from '../types/Aircraft.types'
-
 import { Button } from './Button'
-
-import { handleGetAircraft } from '../services/aircraft'
-import { handleEditPlayer } from '../services/player'
 import Router from 'next/router'
 import { useContextValue } from '../services/ContextElement'
 
