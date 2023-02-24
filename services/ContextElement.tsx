@@ -1,5 +1,6 @@
 
 import { createContext, useContext, ReactNode, useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import { Aircraft } from "../types/Aircraft.types";
 import { Player } from "../types/Player.types";
 import api from "./api";
@@ -31,6 +32,24 @@ type Props = {
     children: ReactNode;
 }
 
+export const saveGame = async (player:Player) => {
+    try {
+        await api.post('player/edit', player)
+
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            width:300,
+            text: 'The game was saved',
+            showConfirmButton: false,
+            timer: 1500
+        })
+
+    } catch (err) {
+        errorHandler(err)
+    }
+}
+
 export const addEmptySpaces = (player: any, max: number) => {    
     if (!player) return player;
 
@@ -55,6 +74,7 @@ export function ContextProvider({ children }: Props) {
     const [ gameTime, setGameTime ] = useState<number>(0);
     const [ playerState, setPlayerState ] = useState<Player|null>(null)
     const [ moneyState, setMoneyState ] = useState<number>(0)
+    const [ autoSave, setAutoSave ] = useState<number>(0)
     const { maxAircrafts } = useContextValue()
 
     const addAircraft = () => {
@@ -87,21 +107,13 @@ export function ContextProvider({ children }: Props) {
         setPlayerState(playerCopy)
     }
 
-    const saveGame = async () => {
-        try {
-            //FIXME: this cant be made like this
-            // i must save the changes on each aircraft first!!!!!
-            await api.post('player/edit', playerState)
-        } catch (err) {
-            errorHandler(err)
-        }
-    }
-
     useEffect(()=>{
         const gameLoop = setInterval(() => {
             if (playerState) {
                 if (gameTime<10) setGameTime(gameTime+1)
                 else setGameTime(1)
+
+                setAutoSave(autoSave+1)
 
                 let aux = 0
                 playerState?.aircrafts?.map((aircraft:Aircraft)=>{
@@ -113,14 +125,18 @@ export function ContextProvider({ children }: Props) {
                 setPlayerState(copyPlayer)
                 setMoneyState(aux)
                 
-                if ((gameTime%10)*10 == 0) {
-                    // saveGame()
+                if ((gameTime%10) == 0) {
                     addAircraft()
+
+                    // each 20 minutes the game autosaves
+                    if (autoSave%1200 == 0 && autoSave) saveGame(playerState)
                 }
             }        
         }, 1000);
 
         return () => clearInterval(gameLoop);
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameTime, playerState]) 
 
     const value = {

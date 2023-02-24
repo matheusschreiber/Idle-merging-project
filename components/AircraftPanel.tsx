@@ -91,6 +91,8 @@ export const AircraftPanel:NextPage = () => {
   useEffect(()=>{
     //on each update on the aircrafts, reload the draggable
     if (player) loadDrag(player?.aircrafts)
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[player?.aircrafts])
 
   return(

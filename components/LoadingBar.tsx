@@ -17,6 +17,8 @@ export const LoadingBar:NextPage = () => {
     })
     
     setFull(flagFull)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[gameTime])
   
   return(
