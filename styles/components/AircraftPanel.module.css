@@ -32,7 +32,7 @@
   transition: .2s;
 }
 
-.content .aircraft_item {
+.aircraft_item {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -43,11 +43,6 @@
   padding-top: 20px;
   margin-top: 10px;
   user-select: none;
-}
-
-.aircraft_item img {
-  margin-bottom: -10px;
-  width: 60%;
 }
 
 .aircraft_item p {
@@ -113,3 +108,6 @@
   transform: scale(1.05);
 } 
 
+.aircraft_image_container {
+  margin-bottom: -1rem;
+}
