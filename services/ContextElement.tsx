@@ -31,6 +31,26 @@ type Props = {
     children: ReactNode;
 }
 
+export const addEmptySpaces = (player: any, max: number) => {    
+    if (!player) return player;
+
+    //if there's empty spaces on player, they must be computed
+    let playerCopy = {...player}
+    let aux = [...playerCopy.aircrafts]
+    const initialLength = aux.length
+    if (initialLength<max) {
+        for(let i=initialLength;i<max;i++){
+            aux[i]={...aux[i-1]}
+            aux[i].id=-1
+        }
+        playerCopy.aircrafts = [...aux]
+        return playerCopy
+    }
+
+    //otherwise just return normally
+    return player;
+};
+
 export function ContextProvider({ children }: Props) {
     const [ gameTime, setGameTime ] = useState<number>(0);
     const [ playerState, setPlayerState ] = useState<Player|null>(null)
@@ -38,9 +58,9 @@ export function ContextProvider({ children }: Props) {
     const { maxAircrafts } = useContextValue()
 
     const addAircraft = () => {
-        if (!playerState) return;
+        if (!playerState || !playerState.aircrafts) return;
         
-        let idToBeReplaced:number=0;
+        let idToBeReplaced:number|null=null;
 
         for(let i=0;i<playerState.aircrafts.length;i++){
             if (playerState.aircrafts[i].id<0) {
@@ -49,7 +69,7 @@ export function ContextProvider({ children }: Props) {
             }
         }
         
-        if (idToBeReplaced>=maxAircrafts) return;
+        if (idToBeReplaced==null || idToBeReplaced>=maxAircrafts) return;
 
         const newAircraftData = {
             player_id:playerState.id,
@@ -64,8 +84,7 @@ export function ContextProvider({ children }: Props) {
             ...newAircraftData
         }
         
-				//FIXME: i think this is broken
-				// setPlayerState(playerCopy)
+        setPlayerState(playerCopy)
     }
 
     const saveGame = async () => {
@@ -98,7 +117,7 @@ export function ContextProvider({ children }: Props) {
                     // saveGame()
                     addAircraft()
                 }
-            }           
+            }        
         }, 1000);
 
         return () => clearInterval(gameLoop);
@@ -120,3 +139,5 @@ export function ContextProvider({ children }: Props) {
         </>
     )
 }
+
+

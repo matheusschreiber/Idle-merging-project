@@ -8,9 +8,16 @@ export const LoadingBar:NextPage = () => {
   const { gameTime, player, maxAircrafts } = useContextValue()
 
   useEffect(()=>{
-    if (player?.aircrafts.length && player?.aircrafts.length>=maxAircrafts) setFull(true)
-    else setFull(false)
-  },[player?.aircrafts])
+    let flagFull = false
+    let validAircrafts = 0
+
+    player?.aircrafts.map((aircraft)=>{
+      if (aircraft.id>0) validAircrafts++
+      if (validAircrafts>=maxAircrafts) flagFull=true
+    })
+    
+    setFull(flagFull)
+  },[gameTime])
   
   return(
     <div className={styles.loading_bar_container}>

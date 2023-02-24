@@ -1,31 +1,24 @@
+import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
 
 import styles from '../styles/Home.module.css'
-import { FiArrowLeft } from 'react-icons/fi'
-
-import { Aircraft } from '../types/Aircraft.types'
-import { Player } from '../types/Player.types'
 
 import { AircraftPanel } from '../components/AircraftPanel'
 import { Header } from '../components/Header'
 import { Ring } from '../components/Ring'
 
-import { handleGetPlayer } from '../services/player'
-import { useContextValue } from '../services/ContextElement'
+import { addEmptySpaces, useContextValue } from '../services/ContextElement'
 
-import Swal from 'sweetalert2'
 import Router from 'next/router'
 import api from '../services/api'
 import { errorHandler } from '../services/errorHandler'
 
 const Home: NextPage = () => {
   
-  //FIXME: describe this variable "showing"
   const [ isMouseOverPanel, setMouseOverPanel ] = useState<boolean>(true)  
   const [ showingPanel, setShowingPanel] = useState<boolean>(false)
-  const { player, setPlayer, gameTime, moneyPerSecond } = useContextValue()
+  const { player, setPlayer, gameTime, maxAircrafts } = useContextValue()
 
   async function loadPlayerData(){    
     if (!player) {
@@ -35,14 +28,14 @@ const Home: NextPage = () => {
 
         const response = await api.get('player/get/'+id)
         localStorage.setItem('IDLE_ID', response.data.id)
-        setPlayer(response.data)
+        
+        await setPlayer(addEmptySpaces(response.data, maxAircrafts))
+
       } catch (err) {
         errorHandler(err)
         localStorage.removeItem('IDLE_ID')
         Router.push('/')
       }
-
-      return
     }
   }     
 
@@ -50,8 +43,6 @@ const Home: NextPage = () => {
     loadPlayerData()
   }, [])  
 
-  useEffect
-   
   return (
     <div className={styles.container} onClick={()=>{if(!isMouseOverPanel&&showingPanel) setShowingPanel(false)}}>
       <Head>

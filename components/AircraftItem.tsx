@@ -12,7 +12,7 @@ export type ListItem = {
 export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
   
   return(
-    <li id={`${listitem.ListID}`} data-selectable={listitem.aircraft.id>0?'yes':''}>
+    <li id={`${listitem.ListID}`} data-selectable={listitem.aircraft.id>0?'yes':''}>      
       {
         //checking if it is an aircraft
         listitem.aircraft&&listitem.aircraft.id>0?
@@ -32,7 +32,6 @@ export const AircraftItem:NextPage<ListItem> = (listitem:ListItem) => {
           <h2></h2>
         </div>
       }
-      
     </li> 
   )
 }

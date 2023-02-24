@@ -1,67 +1,45 @@
-import { NextPage } from "next"
-import { useState, useEffect } from 'react'
-
-import { Aircraft } from "../types/Aircraft.types"
-import { Player } from "../types/Player.types" 
-
 import styles from '../styles/components/AircraftPanel.module.css'
 
+import { useState, useEffect } from 'react'
+import { NextPage } from "next"
+
+import { addEmptySpaces, useContextValue } from "../services/ContextElement"
 import { AircraftItem, ListItem } from "./AircraftItem"
+import { Aircraft } from "../types/Aircraft.types"
 import { LoadingBar } from "./LoadingBar"
 
-import { Spinner } from "react-activity"
-import "react-activity/dist/library.css";
-import { useContextValue } from "../services/ContextElement"
-
 export const AircraftPanel:NextPage = () => {
-  const [ aircrafts, setAircrafts ] = useState<Aircraft[]>([]);
-  const [ loading, setLoading ] = useState<boolean>(false);
   const [ draggableState, setDraggableState ] = useState<any>();
 
   const { player, setPlayer, gameTime, maxAircrafts } = useContextValue()
   
-  async function loadAircrafts(){
-    if (!player) return;
-    let aux:Aircraft[] = [...player.aircrafts]
-
-    const initialLength = aux.length
-    if(initialLength<maxAircrafts) {
-      for(let i=0;i<maxAircrafts-initialLength;i++) {
-        let fakeAircraft:Aircraft = {...aux[0]}
-        fakeAircraft.id*=-1
-        aux.push(fakeAircraft)
-      }
-    }
-
-    setAircrafts(aux)
-    loadDrag(aux)
-  }
-
-  
   async function checkMatch(start:HTMLElement, end:HTMLElement, draggable:any, aircraftArray:Aircraft[]){    
-    if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
+    
+    // if its just dragging to the same place (just do nothing)
+    if (start.id===end.id){}
+    
+    // if its a match
+    else if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
       draggable.destroy()
-      // console.log(aircraftArray[parseInt(start.id)])
-      // console.log(aircraftArray[parseInt(end.id)])
       const aircraftStartID = aircraftArray[parseInt(start.id)].id
       const aircraftEndID = aircraftArray[parseInt(end.id)].id
       
-      let auxAircrafts = aircraftArray.filter(aircraft=> 
-        aircraft.id!=aircraftEndID && aircraft.id>=0
-      )
-
-      auxAircrafts.map(aircraft=> {
+      // improving aircraft of destiny (merge) and deleting the dragged one
+      aircraftArray.map(aircraft=> {
         if (aircraft.id==aircraftStartID) {
+          aircraft.id=-1
+        } else if (aircraft.id==aircraftEndID) {
           aircraft.level+=1
           aircraft.money_per_second*=1.2
         }
       })
-
       
+      //updating player's aircrafts
       let auxPlayer = {...player}
-      auxPlayer.aircrafts = auxAircrafts
-      setPlayer(auxPlayer)
-      
+      auxPlayer.aircrafts = aircraftArray
+      setPlayer(addEmptySpaces(auxPlayer, maxAircrafts))
+
+    //if its not a match (just switching places)
     } else {
       const copy = {...aircraftArray[parseInt(end.id)]}
       aircraftArray[parseInt(end.id)] = {...aircraftArray[parseInt(start.id)]}
@@ -71,8 +49,6 @@ export const AircraftPanel:NextPage = () => {
     draggable.destroy()
     loadDrag(aircraftArray)
   }
-
-  
 
   async function loadDrag(aircrafts:Aircraft[]){
     //Draggable library setup
@@ -113,20 +89,18 @@ export const AircraftPanel:NextPage = () => {
   }
 
   useEffect(()=>{
-    loadAircrafts()
+    //on each update on the aircrafts, reload the draggable
+    if (player) loadDrag(player?.aircrafts)
   },[player?.aircrafts])
-    
+
   return(
     <div className={styles.container}>
       
-      <div className={styles.title}>
-        <h1>FLYING</h1>
-        <Spinner animating={loading} />
-      </div>
+      <div className={styles.title}><h1>FLYING</h1></div>
 
       <ul className={styles.content}>
         {
-          aircrafts?.map((aircraft,pos) =>{
+          player?.aircrafts.map((aircraft,pos) =>{
             let listitem:ListItem = {
               aircraft:aircraft,
               ListID:pos

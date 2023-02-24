@@ -7,7 +7,7 @@ import "react-activity/dist/library.css";
 
 import Head from "next/head"
 
-import { useContextValue } from '../services/ContextElement'
+import { addEmptySpaces, useContextValue } from '../services/ContextElement'
 
 import styles from '../styles/Login.module.css'
 import Swal from 'sweetalert2'
@@ -20,7 +20,7 @@ const Login:NextPage = () =>{
   const [ buttonStatus, setButtonStatus ] = useState<"newplayer"|"offline"|"existing">("existing")  
   const [ loading, setLoading ] = useState<boolean>(false)
 
-  const { setPlayer } = useContextValue()
+  const { setPlayer, maxAircrafts } = useContextValue()
 
   async function handleSubmit(e:FormEvent|undefined){
     setLoading(true)
@@ -38,7 +38,7 @@ const Login:NextPage = () =>{
           showConfirmButton: false,
           timer: 1500
         })
-        await setPlayer(response.data)
+        await setPlayer(addEmptySpaces(response.data, maxAircrafts))
         localStorage.setItem('IDLE_ID', response.data.id)
         Router.push('/Home')
       } catch(err) {
@@ -72,12 +72,14 @@ const Login:NextPage = () =>{
 
           Swal.fire('New player registered!', '', 'success')
           localStorage.setItem('IDLE_ID', playerAux.id)
-          await setPlayer({
-            ...playerAux,
-            aircrafts:[
-              response.data
-            ]
-          })
+          await setPlayer(addEmptySpaces(
+            {
+              ...playerAux,
+              aircrafts:[
+                response.data
+              ]
+            }, maxAircrafts
+          ))
           Router.push('/Home')
         } catch(err){
           errorHandler(err)
