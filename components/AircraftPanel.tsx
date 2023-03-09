@@ -21,14 +21,14 @@ export const AircraftPanel:NextPage = () => {
     // if its a match
     else if (start.children[0].children[1].innerHTML==end.children[0].children[1].innerHTML) {
       draggable.destroy()
-      const aircraftStartID = aircraftArray[parseInt(start.id)].id
-      const aircraftEndID = aircraftArray[parseInt(end.id)].id
+      const aircraftStartID = aircraftArray[parseInt(start.id)]._id
+      const aircraftEndID = aircraftArray[parseInt(end.id)]._id
       
       // improving aircraft of destiny (merge) and deleting the dragged one
       aircraftArray.map(aircraft=> {
-        if (aircraft.id==aircraftStartID) {
-          aircraft.id=-1
-        } else if (aircraft.id==aircraftEndID) {
+        if (aircraft._id==aircraftStartID) {
+          aircraft._id="blank " + new Date().getTime()
+        } else if (aircraft._id==aircraftEndID) {
           aircraft.level+=1
           aircraft.money_per_second*=1.2
         }
@@ -105,7 +105,7 @@ export const AircraftPanel:NextPage = () => {
           player?.aircrafts.map((aircraft,pos) =>{
             let listitem:ListItem = {
               aircraft:aircraft,
-              ListID:pos
+              ListID:pos,
             }
 
             return <AircraftItem key={pos} {...listitem} /> 

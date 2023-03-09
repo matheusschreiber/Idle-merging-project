@@ -1,6 +1,7 @@
 
 import { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { isBlankAircraft, isValidAircraft } from "../components/AircraftItem";
 import { Aircraft } from "../types/Aircraft.types";
 import { Player } from "../types/Player.types";
 import api from "./api";
@@ -34,7 +35,12 @@ type Props = {
 
 export const saveGame = async (player:Player) => {
     try {
-        await api.post('player/edit', player)
+        await api.post('player/edit', {
+            id: player._id,
+            rank: player.rank,
+            aircrafts: player.aircrafts,
+            wallet: player.wallet
+        })
 
         Swal.fire({
             position: 'top-end',
@@ -60,7 +66,7 @@ export const addEmptySpaces = (player: any, max: number) => {
     if (initialLength<max) {
         for(let i=initialLength;i<max;i++){
             aux[i]={...aux[i-1]}
-            aux[i].id=-1
+            aux[i]._id="blank " + new Date().getTime()
         }
         playerCopy.aircrafts = [...aux]
         return playerCopy
@@ -83,7 +89,7 @@ export function ContextProvider({ children }: Props) {
         let idToBeReplaced:number|null=null;
 
         for(let i=0;i<playerState.aircrafts.length;i++){
-            if (playerState.aircrafts[i].id<0) {
+            if (isBlankAircraft(playerState.aircrafts[i]._id)) {
                 idToBeReplaced=i
                 break
             }
@@ -92,7 +98,7 @@ export function ContextProvider({ children }: Props) {
         if (idToBeReplaced==null || idToBeReplaced>=maxAircrafts) return;
 
         const newAircraftData = {
-            player_id:playerState.id,
+            player_id:playerState._id,
             level:1,
             money_per_second:10,
             bonus_multiplier:1
@@ -100,7 +106,7 @@ export function ContextProvider({ children }: Props) {
 
         let playerCopy = {...playerState}
         playerCopy.aircrafts[idToBeReplaced] = {
-            id: new Date().getTime()+0.5, //this id is float, to indicate to backend that this aircraft is not registered yet
+            _id: "toRegister " + new Date().getTime(),
             ...newAircraftData
         }
         
@@ -117,7 +123,7 @@ export function ContextProvider({ children }: Props) {
 
                 let aux = 0
                 playerState?.aircrafts?.map((aircraft:Aircraft)=>{
-                    if (aircraft.id>0) aux += aircraft.money_per_second * aircraft.bonus_multiplier
+                    if (isValidAircraft(aircraft._id)) aux += aircraft.money_per_second * aircraft.bonus_multiplier
                 })
 
                 let copyPlayer = {...playerState}

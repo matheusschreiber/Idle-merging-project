@@ -39,7 +39,7 @@ const Login:NextPage = () =>{
           timer: 1500
         })
         await setPlayer(addEmptySpaces(response.data, maxAircrafts))
-        localStorage.setItem('IDLE_ID', response.data.id)
+        localStorage.setItem('IDLE_ID', response.data._id)
         Router.push('/Home')
       } catch(err) {
         errorHandler(err)
@@ -64,14 +64,14 @@ const Login:NextPage = () =>{
           let playerAux:any = response.data
           
           response = await api.post('aircraft/new', {
-            player_id:response.data.id,
+            player_id:response.data._id,
             level:1,
             money_per_second:10,
             bonus_multiplier:1,
           })
 
           Swal.fire('New player registered!', '', 'success')
-          localStorage.setItem('IDLE_ID', playerAux.id)
+          localStorage.setItem('IDLE_ID', playerAux._id)
           await setPlayer(addEmptySpaces(
             {
               ...playerAux,
