@@ -16,7 +16,7 @@ export default async function handler(
   await cors(req, res);
   const { database } = await connectToDatabase();
   const players = database.collection("players");
-  const aircraftsColection = database.collection("aircrafts");
+  const aircraftsCollection = database.collection("aircrafts");
 
   const { id, rank, aircrafts, wallet } = req.body;
 
@@ -30,7 +30,7 @@ export default async function handler(
   if (aircrafts) {
     let aircraftsToBeRegistered: Aircraft[] = [];
     let registeredAircrafts: Aircraft[] = [];
-    const cursorAircraftsBefore = aircraftsColection.find({
+    const cursorAircraftsBefore = aircraftsCollection.find({
       player_id: player._id,
     });
     await cursorAircraftsBefore.forEach((a: any) => {
@@ -49,7 +49,7 @@ export default async function handler(
           aircrafts.map(async (aircraftunregistered: Aircraft) => {
             if (aircraftregistered._id == aircraftunregistered._id) {
               discarted = false;
-              await aircraftsColection.findOneAndUpdate(
+              await aircraftsCollection.findOneAndUpdate(
                 { _id: new ObjectId(aircraftregistered._id as string) },
                 {
                   $set: {
@@ -73,14 +73,14 @@ export default async function handler(
 
         // if registered aircraft is no longer alive (suffered merging)
         if (discarted)
-          await aircraftsColection.findOneAndDelete({
+          await aircraftsCollection.findOneAndDelete({
             _id: new ObjectId(aircraftregistered._id as string),
           });
       })
     );
 
     registeredAircrafts = [];
-    const cursorAircraftsAfter = aircraftsColection.find({
+    const cursorAircraftsAfter = aircraftsCollection.find({
       player_id: player._id,
     });
     await cursorAircraftsAfter.forEach((a: any) => {
@@ -96,13 +96,13 @@ export default async function handler(
           });
 
         const aircraftTemplate = {
-          player_id: new ObjectId(player.id),
+          player_id: new ObjectId(player._id),
           level: aircraftunregistered.level,
           money_per_second: aircraftunregistered.money_per_second,
           bonus_multiplier: aircraftunregistered.bonus_multiplier,
         };
 
-        await aircrafts.insertOne(aircraftTemplate);
+        await aircraftsCollection.insertOne(aircraftTemplate);
 
         registeredAircrafts.push(aircraftunregistered);
       })
@@ -120,7 +120,7 @@ export default async function handler(
   );
 
   let finalAircrafts: Aircraft[] = [];
-  const cursorAircrafts = aircraftsColection.find({
+  const cursorAircrafts = aircraftsCollection.find({
     player_id: player._id,
   });
   await cursorAircrafts.forEach((a: any) => {
