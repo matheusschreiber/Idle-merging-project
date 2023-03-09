@@ -23,7 +23,7 @@ export default async function handler(
   const player = await players.findOne({ _id: new ObjectId(id as string) });
 
   if (!player) {
-    return res.status(404).json({ error: "Player not player" });
+    return res.status(404).json({ error: "Player with id '" + id + "' not found" });
   }
 
   //updating player's aircrafts, if given
@@ -61,7 +61,9 @@ export default async function handler(
               );
             } else if (
               //here we check if its a valid aircraft, not registered and not queue to register yet, respectively
-              typeof aircraftunregistered._id == "string" &&
+              //if the id is 'toRegister' it means that this aircraft is not in database yet
+              //if the id is 'blank' it means that it's only a placeholder for aircrafts
+              aircraftunregistered._id.toString().includes("blank") &&
               aircraftunregistered._id.toString().includes("toRegister") &&
               !aircraftsToBeRegistered.includes(aircraftunregistered)
             ) {

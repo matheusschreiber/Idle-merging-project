@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { useContextValue } from "../services/ContextElement";
 import styles from '../styles/components/LoadingBar.module.css'
+import { isValidAircraft } from "./AircraftItem";
 
 export const LoadingBar:NextPage = () => {
   const [ full, setFull ] = useState<boolean>(false)
@@ -12,7 +13,7 @@ export const LoadingBar:NextPage = () => {
     let validAircrafts = 0
 
     player?.aircrafts.map((aircraft)=>{
-      if (aircraft.id>0) validAircrafts++
+      if (isValidAircraft(aircraft._id)) validAircrafts++
       if (validAircrafts>=maxAircrafts) flagFull=true
     })
     
