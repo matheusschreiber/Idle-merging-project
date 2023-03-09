@@ -18,16 +18,18 @@ export async function connectToDatabase(): Promise<{
     if (mongoClient && database) {
       return { mongoClient, database };
     }
-    if (process.env.NODE_ENV === "development") {
-      if (!global._mongoClient) {
-        mongoClient = await MongoClient.connect(uri, options);
-        global._mongoClient = mongoClient;
-      } else {
-        mongoClient = global._mongoClient;
-      }
-    } else {
-      mongoClient = await MongoClient.connect(uri, options);
-    }
+    // if (process.env.NODE_ENV === "development") {
+    //   if (!global._mongoClient) {
+    //     mongoClient = await MongoClient.connect(uri, options);
+    //     global._mongoClient = mongoClient;
+    //   } else {
+    //     mongoClient = global._mongoClient;
+    //   }
+    // } else {
+    //   mongoClient = await MongoClient.connect(uri, options);
+    // }
+
+    mongoClient = await MongoClient.connect(uri, options);
 
     if (!mongoClient) throw new Error("Couldn't connect to MongoDB database");
 
