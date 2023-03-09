@@ -1,40 +1,59 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-import connection from '../../../database/connection'
+import type { NextApiRequest, NextApiResponse } from "next";
 
-import { Aircraft } from '../../../types/Aircraft.types'
+import { Aircraft } from "../../../types/Aircraft.types";
 import { Error } from "../../../types/Error.types";
+import { connectToDatabase } from "../../../lib/database";
+import cors from "../cors";
+import { ObjectId } from "mongodb";
 
-import cors from '../cors'
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Aircraft | Error>
+) {
+  await cors(req, res);
+  const { database } = await connectToDatabase();
+  const players = database.collection("players");
+  const aircrafts = database.collection("aircrafts");
 
-export default async function handler(req: NextApiRequest,res: NextApiResponse<Aircraft | Error>) {
-  await cors(req,res)
   const { player_id, level, money_per_second, bonus_multiplier } = req.body;
+
+  let player = await players.findOne({
+    _id: new ObjectId(player_id as string),
+  });
+
+  if (!player) {
+    return res
+      .status(404)
+      .json({ error: "Player with id '" + player_id + "' not found" });
+  }
+
+  let player_aircrafts = [];
+  const cursor = aircrafts.find({ player_id: new ObjectId(player._id) });
+  await cursor.forEach((a: any) => {
+    player_aircrafts.push(a);
+  });
+
+  if (player_aircrafts.length >= 6) {
+    return res
+      .status(403)
+      .json({ error: "Player has reached maximum amount of aircrafts" });
+  }
+
   const aircraftTemplate = {
-    player_id,
+    player_id: new ObjectId(player._id),
     level,
     money_per_second,
     bonus_multiplier,
-  }
+  };
 
-  let [ player ] = await connection('players').where('id',player_id)
-  
-  if (!player) {
-    return res.status(404).json({error:'Player with id ' + player_id + ' not found'})
-  }
+  const { insertedId } = await aircrafts.insertOne(aircraftTemplate);
 
-  const player_aircrafts = await connection("aircrafts")
-    .where("player_id", player_id)
-    .select("*");
-
-  if (player_aircrafts.length >= 6) {
-    return res.status(403).json({error:'Player has reached maximum amount of aircrafts'})
-  }
-
-  const new_aircraft_id = await connection('aircrafts').insert(aircraftTemplate)
-  
   return res.status(200).json({
-    id: new_aircraft_id[0],
-    ...aircraftTemplate,
+    _id: insertedId.toString(),
+    player_id: player._id.toString(),
+    level: aircraftTemplate.level,
+    money_per_second: aircraftTemplate.money_per_second,
+    bonus_multiplier: aircraftTemplate.bonus_multiplier,
   });
 }

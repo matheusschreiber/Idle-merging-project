@@ -1,27 +1,47 @@
-import { NextApiResponse,NextApiRequest } from "next";
-import connection from '../../../../database/connection';
-
-import { Player } from '../../../../types/Player.types';
+import { NextApiResponse, NextApiRequest } from "next";
+import { connectToDatabase } from "../../../../lib/database";
+import { Player } from "../../../../types/Player.types";
 import { Error } from "../../../../types/Error.types";
 
-import cors from '../../cors'
+import cors from "../../cors";
+import { Aircraft } from "../../../../types/Aircraft.types";
+import { ObjectId } from "mongodb";
 
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Player | Error>
+) {
+  await cors(req, res);
+  const { database } = await connectToDatabase();
+  const players = database.collection("players");
+  const aircrafts = database.collection("aircrafts");
+  const playerID = req.query.playerID;
 
-export default async function handler(req:NextApiRequest, res:NextApiResponse<Player | Error>){
-  await cors(req, res)
-  const playerID = req.query.playerID
+  let player = null;
 
-  let player=null;
-  
-  if (playerID) [player] = await connection("players").where("id", playerID);
-  
+  if (playerID)
+    player = await players.findOne({ _id: new ObjectId(playerID as string) });
+
   if (!player) {
     return res
       .status(404)
-      .json({ error: 'Player with id "' + playerID + '" not found' });
+      .json({ error: "Player with id '" + playerID + "' not found" });
   }
-  
-  const aircrafts = await connection('aircrafts').select('*').where('player_id', player.id)
-  player["aircrafts"] = [...aircrafts]
-  return res.status(200).json(player)
+
+  let player_aircrafts: Aircraft[] = [];
+  const cursor = aircrafts.find({
+    player_id: new ObjectId(playerID as string),
+  });
+  await cursor.forEach((a: any) => {
+    player_aircrafts.push(a);
+  });
+
+  return res.status(200).json({
+    _id: player._id.toString(),
+    name: player.name,
+    wallet: player.wallet,
+    password: player.password,
+    rank: player.rank,
+    aircrafts: player_aircrafts,
+  });
 }

@@ -1,10 +1,10 @@
-import { Aircraft } from "./Aircraft.types"
+import { Aircraft } from "./Aircraft.types";
 
 export type Player = {
-  id: number,
-  name: string,
-  password: string,
-  rank: number,
-  aircrafts: Aircraft[],
-  wallet: number
-}
+  _id: string;
+  name: string;
+  password: string;
+  rank: number;
+  aircrafts: Aircraft[];
+  wallet: number;
+};
