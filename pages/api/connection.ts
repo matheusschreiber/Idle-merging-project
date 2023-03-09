@@ -1,5 +1,5 @@
 import { NextApiResponse, NextApiRequest } from "next";
-import connection from "../../database/connection";
+import connection from "../../lib/database";
 
 import cors from "./cors";
 
@@ -8,12 +8,11 @@ export default async function handler(
   res: NextApiResponse<boolean>
 ) {
   await cors(req, res);
-  
+
   try {
-    
-    const aircrafts = await connection("aircrafts").select('*');
+    const aircrafts = await connection("aircrafts").select("*");
     const players = await connection("players").select("*");
-  
+
     if (aircrafts && players) {
       return res.status(200).json(true);
     }
