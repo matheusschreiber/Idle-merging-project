@@ -4,6 +4,7 @@ import { Aircraft } from "../types/Aircraft.types"
 import { RingAircraft } from "./RingAircraft"
 import { useEffect, useState } from 'react'
 import { NextPage } from "next"
+import { isValidAircraft } from "./AircraftItem"
 
 export const Ring:NextPage = () => {
 
@@ -71,7 +72,7 @@ export const Ring:NextPage = () => {
           aircrafts?.map((a,pos)=>{
             const randomStart = ellipseXRadius - Math.round(Math.random()*ellipseXRadius)
             return (
-              a.id>0?
+              isValidAircraft(a._id)?
               <RingAircraft 
                 key={pos}
                 start={randomStart}
