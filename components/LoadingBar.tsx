@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { useContextValue } from "../services/ContextElement";
 import styles from '../styles/components/LoadingBar.module.css'
-import { isValidAircraft } from "./AircraftItem";
+import { isBlankAircraft } from "./AircraftItem";
 
 export const LoadingBar:NextPage = () => {
   const [ full, setFull ] = useState<boolean>(false)
@@ -13,10 +13,9 @@ export const LoadingBar:NextPage = () => {
     let validAircrafts = 0
 
     player?.aircrafts.map((aircraft)=>{
-      if (isValidAircraft(aircraft._id)) validAircrafts++
+      if (!isBlankAircraft(aircraft._id)) validAircrafts++
       if (validAircrafts>=maxAircrafts) flagFull=true
     })
-    
     setFull(flagFull)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
