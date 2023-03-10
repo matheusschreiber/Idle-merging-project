@@ -123,7 +123,7 @@ export function ContextProvider({ children }: Props) {
 
                 let aux = 0
                 playerState?.aircrafts?.map((aircraft:Aircraft)=>{
-                    if (isValidAircraft(aircraft._id)) aux += aircraft.money_per_second * aircraft.bonus_multiplier
+                    if (!isBlankAircraft(aircraft._id)) aux += aircraft.money_per_second * aircraft.bonus_multiplier
                 })
 
                 let copyPlayer = {...playerState}
