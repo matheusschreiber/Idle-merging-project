@@ -1,5 +1,5 @@
 
-![badge](https://img.shields.io/static/v1?label=Development%20status%20v2.0&message=mantained&color=green) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=MongoDB%20database%20status&message=Free%20Plan&color=green)
+![badge](https://img.shields.io/static/v1?label=Development%20status%20v2.0&message=paused&color=yellow) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Offline&color=yellow) ![badge](https://img.shields.io/static/v1?label=MongoDB%20database%20status&message=Free%20Plan&color=green)
 
 # Idle Game
 
