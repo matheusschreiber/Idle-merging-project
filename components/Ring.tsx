@@ -4,7 +4,7 @@ import { Aircraft } from "../types/Aircraft.types"
 import { RingAircraft } from "./RingAircraft"
 import { useEffect, useState } from 'react'
 import { NextPage } from "next"
-import { isValidAircraft } from "./AircraftItem"
+import { isBlankAircraft, isPendingAircraft, isValidAircraft } from "./AircraftItem"
 
 export const Ring:NextPage = () => {
 
@@ -22,6 +22,8 @@ export const Ring:NextPage = () => {
 
   async function fetchAircrafts() {
     if (player?.aircrafts) setAircrafts(player.aircrafts)
+
+    console.log(aircrafts)
   }
 
   useEffect(()=>{
@@ -51,7 +53,6 @@ export const Ring:NextPage = () => {
   return(
     <div className={styles.container}>
       <svg>
-        {/* FIXME: what is this for? */}
         <defs>
           <clipPath id="cut-off-top">
             <rect x={ellipseXRadius-planetRadius+offsetX} y={ellipseYRadius+offsetY} width={planetRadius*2} height={planetRadius} />
@@ -72,7 +73,7 @@ export const Ring:NextPage = () => {
           aircrafts?.map((a,pos)=>{
             const randomStart = ellipseXRadius - Math.round(Math.random()*ellipseXRadius)
             return (
-              isValidAircraft(a._id)?
+              !isBlankAircraft(a._id)?
               <RingAircraft 
                 key={pos}
                 start={randomStart}
@@ -82,6 +83,7 @@ export const Ring:NextPage = () => {
             )
           })
         }
+        
 
         <defs>
           <clipPath id="cut-off-bottom">
@@ -89,11 +91,7 @@ export const Ring:NextPage = () => {
           </clipPath>
         </defs>
         <circle cx={ellipseXRadius+offsetX} cy={ellipseYRadius+offsetY} r={planetRadius} clipPath="url(#cut-off-bottom)" fill={planetColor}/>
-
-
       </svg>
-
-      
     </div>
   )
 }

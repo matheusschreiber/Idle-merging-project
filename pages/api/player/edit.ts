@@ -23,7 +23,9 @@ export default async function handler(
   const player = await players.findOne({ _id: new ObjectId(id as string) });
 
   if (!player) {
-    return res.status(404).json({ error: "Player with id '" + id + "' not found" });
+    return res
+      .status(404)
+      .json({ error: "Player with id '" + id + "' not found" });
   }
 
   //updating player's aircrafts, if given
@@ -47,10 +49,17 @@ export default async function handler(
         let discarted = true;
         await Promise.all(
           aircrafts.map(async (aircraftunregistered: Aircraft) => {
-            if (aircraftregistered._id == aircraftunregistered._id) {
+            if (
+              aircraftregistered._id.toString() ==
+              aircraftunregistered._id.toString()
+            ) {
               discarted = false;
               await aircraftsCollection.findOneAndUpdate(
-                { _id: new ObjectId(aircraftregistered._id as string) },
+                {
+                  _id: new ObjectId(
+                    aircraftregistered._id.toString() as string
+                  ),
+                },
                 {
                   $set: {
                     level: aircraftunregistered.level,
@@ -63,7 +72,7 @@ export default async function handler(
               //here we check if its a valid aircraft, not registered and not queue to register yet, respectively
               //if the id is 'toRegister' it means that this aircraft is not in database yet
               //if the id is 'blank' it means that it's only a placeholder for aircrafts
-              aircraftunregistered._id.toString().includes("blank") &&
+              !aircraftunregistered._id.toString().includes("blank") &&
               aircraftunregistered._id.toString().includes("toRegister") &&
               !aircraftsToBeRegistered.includes(aircraftunregistered)
             ) {
@@ -83,7 +92,7 @@ export default async function handler(
 
     registeredAircrafts = [];
     const cursorAircraftsAfter = aircraftsCollection.find({
-      player_id: player._id,
+      player_id: player._id.toString(),
     });
     await cursorAircraftsAfter.forEach((a: any) => {
       registeredAircrafts.push(a);
@@ -98,7 +107,7 @@ export default async function handler(
           });
 
         const aircraftTemplate = {
-          player_id: new ObjectId(player._id),
+          player_id: new ObjectId(player._id.toString()),
           level: aircraftunregistered.level,
           money_per_second: aircraftunregistered.money_per_second,
           bonus_multiplier: aircraftunregistered.bonus_multiplier,
@@ -123,7 +132,7 @@ export default async function handler(
 
   let finalAircrafts: Aircraft[] = [];
   const cursorAircrafts = aircraftsCollection.find({
-    player_id: player._id,
+    player_id: player._id.toString(),
   });
   await cursorAircrafts.forEach((a: any) => {
     finalAircrafts.push(a);

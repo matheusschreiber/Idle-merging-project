@@ -27,7 +27,7 @@ const Home: NextPage = () => {
         if (!id) throw Error('No id found')
 
         const response = await api.get('player/get/'+id)
-        localStorage.setItem('IDLE_ID', response.data.id)
+        localStorage.setItem('IDLE_ID', response.data._id)
         
         await setPlayer(addEmptySpaces(response.data, maxAircrafts))
 

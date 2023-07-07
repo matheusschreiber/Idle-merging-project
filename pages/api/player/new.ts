@@ -35,6 +35,8 @@ export default async function handler(
     password: hashedPassword,
   };
 
+  // console.log(hashedPassword) 932f3c1b56257ce8539ac269d7aab42550dacf8818d075f0bdf1990562aae3ef
+
   await players.insertOne(playerTemplate);
 
   const player_created = await players.findOne({ name });
