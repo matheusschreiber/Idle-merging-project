@@ -1,5 +1,6 @@
 
-![badge](https://img.shields.io/static/v1?label=Development%20status%20v2.0&message=paused&color=yellow) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Offline&color=yellow) ![badge](https://img.shields.io/static/v1?label=MongoDB%20database%20status&message=Free%20Plan&color=green)
+![badge](https://img.shields.io/static/v1?label=Version&message=2.0&color=green) 
+![badge](https://img.shields.io/static/v1?label=Status&message=Online&color=green) 
 
 # Idle Game
 
@@ -9,7 +10,7 @@ This is a web browser game with an idle concept. It envolves aircrafts in a 2x3 
 
 [Click here to play on browser](https://idlegame.vercel.app/)
 
->At the moment there's a phisical limit of 6 aircrafts
+>At the moment there's a limit of 6 aircrafts
 
 ## Game pictures
 
