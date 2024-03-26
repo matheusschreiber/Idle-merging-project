@@ -30,7 +30,7 @@ export const AircraftPanel:NextPage = () => {
           aircraft._id="blank " + new Date().getTime()
         } else if (aircraft._id==aircraftEndID) {
           aircraft.level+=1
-          aircraft.money_per_second*=1.2
+          aircraft.money_per_second*=2.1
         }
       })
       
